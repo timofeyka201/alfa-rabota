@@ -2,6 +2,7 @@
 // Разметка собрана по скриншотам из папки «Screen of design/Alfa Mobile app».
 
 import { ico, statusBar, tabbar, homeIndicator, esc, toast, ruDate, timeHM } from '../util.js';
+import { art, bigNumber } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 
@@ -26,78 +27,78 @@ function home() {
   const s = store.get();
 
   const stories = [
-    ['✈️', 'Кэшбэк до 100%', '#1F68EB', '#fff'],
-    ['💬', '500 ₽ за добрые слова', '#E9E4FF', '#1B1B1B'],
-    ['🥑', 'Кэшбэк до 100% в Азбуке вкуса', '#7B2FF7', '#fff'],
-    ['🎁', 'Приветственный бонус', '#FFE9E7', '#1B1B1B'],
+    [art.plane, 'Кэшбэк до 100%', '#1F68EB', '#fff'],
+    [art.speech, '500 ₽ за добрые слова', '#E9E4FF', '#1B1B1B'],
+    [art.leaf, 'Кэшбэк до 100% в Азбуке вкуса', '#7B2FF7', '#fff'],
+    [art.gift, 'Приветственный бонус', '#FFE9E7', '#1B1B1B'],
   ];
 
   const transfers = [
-    ['🔺', 'По номеру телефона'],
-    ['🌍', 'За рубеж'],
-    ['👤', 'Себе'],
+    [art.phoneOut, 'По номеру телефона'],
+    [art.globe, 'За рубеж'],
+    [art.person, 'Себе'],
     ['ЕА', 'Екатерина Аркадьевн…'],
     ['ЕВ', 'Екатерина Валериевн…'],
   ];
 
   const recommend = [
-    ['Пригласите и заработайте', 'Платим за каждого друга', '#E5D9FF', '🤝'],
-    ['2500 ₽ за кредитку', '', '#B8F5EF', '💳'],
-    ['500 ₽ за Иностранца', '', '#E5D9FF', '🌐'],
-    ['5000 ₽ за бизнес-счёт', '', '#EFE4FF', '📁'],
+    ['Пригласите и заработайте', 'Платим за каждого друга', '#E5D9FF', art.handshake],
+    ['2500 ₽ за кредитку', '', '#B8F5EF', art.card],
+    ['500 ₽ за Иностранца', '', '#E5D9FF', art.wifi],
+    ['5000 ₽ за бизнес-счёт', '', '#EFE4FF', art.folder],
   ];
 
   const credits = [
     ['Получите деньги', 'На выгодных условиях', '#C3D7FA', ''],
-    ['Наличными', 'До 7,5 млн ₽ быстро', '#F1F2F4', '💜'],
-    ['Кредитная карта', 'За 5 минут', '#F1F2F4', '💳'],
+    ['Наличными', 'До 7,5 млн ₽ быстро', '#F1F2F4', art.wallet],
+    ['Кредитная карта', 'За 5 минут', '#F1F2F4', art.card],
   ];
 
   const profit = [
     ['Забирайте весь кэшбэк', 'А ещё скидки и промокоды', '#FBD3BC', ''],
-    ['Ого, вот это кэшбэк', '', '#EF3124', '💯'],
-    ['Суперкэшбэк до 100%', '', '#1F68EB', '🅰️'],
+    ['Ого, вот это кэшбэк', '', '#EF3124', art.percent],
+    ['Суперкэшбэк до 100%', '', '#1F68EB', art.alfaA],
   ];
 
   const services = [
-    ['work', '💼', 'Работа', 'новое'],
-    ['ins', '☂️', 'Страховки', 'до 10%'],
-    ['travel', '✈️', 'Тревел', 'до 10%'],
-    ['fuel', '💧', 'Заправки', 'до 3%'],
-    ['afisha', '🎟', 'Афиша', 'до 5%'],
-    ['sim', '📱', 'Связь', 'до 10%'],
+    ['work', art.briefcase, 'Работа', 'новое'],
+    ['ins', art.umbrella, 'Страховки', 'до 10%'],
+    ['travel', art.plane, 'Тревел', 'до 10%'],
+    ['fuel', art.droplet, 'Заправки', 'до 3%'],
+    ['afisha', art.ticket, 'Афиша', 'до 5%'],
+    ['sim', art.phone, 'Связь', 'до 10%'],
   ];
 
   const partners = [
-    ['🍔', '«Вкусно…', 'до 100%', '#1B4332'],
-    ['🔵', 'Авито', 'до 100%', '#fff'],
-    ['🥑', 'Азбука вк…', 'до 100%', '#123524'],
-    ['🅼', 'Магнит Д…', 'до 35%', '#F1F2F4'],
-    ['🟢', 'Пятёрочка', 'до 20%', '#0E7C3F'],
+    [art.burger, '«Вкусно…', 'до 100%', '#1B4332'],
+    [art.bag, 'Авито', 'до 100%', '#fff'],
+    [art.leaf, 'Азбука вк…', 'до 100%', '#123524'],
+    [art.store, 'Магнит Д…', 'до 35%', '#F1F2F4'],
+    [art.cart, 'Пятёрочка', 'до 20%', '#0E7C3F'],
   ];
 
   const travel = [
     ['Отдыхайте с выгодой', 'Билеты, туры, отели', '#C9BEFF', ''],
-    ['Суперкэшбэк на поездки', '', '#1F68EB', '✈️'],
-    ['Мои поездки', 'История и управление', '#F1F2F4', '🧳'],
+    ['Суперкэшбэк на поездки', '', '#1F68EB', art.plane],
+    ['Мои поездки', 'История и управление', '#F1F2F4', art.suitcase],
   ];
 
   const insurance = [
     ['Не рискуйте', 'Защитите себя и своё имущество', '#FBC7C2', ''],
-    ['−20% и кэшбэк', 'На полис в поездку', '#F1F2F4', '🧳'],
-    ['Защита карты', 'От мошенников', '#F1F2F4', '🛡'],
+    ['−20% и кэшбэк', 'На полис в поездку', '#F1F2F4', art.suitcase],
+    ['Защита карты', 'От мошенников', '#F1F2F4', art.shield],
   ];
 
   const invest = [
     ['Заработайте больше', 'Инвестиции от 100 ₽', '#B9F08A', ''],
-    ['Дарим 7000 ₽', 'Инвесткопилка', '#7B2FF7', '🎁'],
-    ['Цифровые активы', 'Инвестиции будущего', '#9FEDE4', '💠'],
+    ['Дарим 7000 ₽', 'Инвесткопилка', '#7B2FF7', art.gift],
+    ['Цифровые активы', 'Инвестиции будущего', '#9FEDE4', art.crystal],
   ];
 
   const newProduct = [
     ['Карты, счета и сервисы', 'На лучших условиях', '#DCC9FF', ''],
-    ['Накопить', 'Стабильный доход', '#F1F2F4', '🔴'],
-    ['Взять кредит', 'На любые цели', '#F1F2F4', '⚡️'],
+    ['Накопить', 'Стабильный доход', '#F1F2F4', art.safe],
+    ['Взять кредит', 'На любые цели', '#F1F2F4', art.bolt],
   ];
 
   const tile = ([title, sub, bg, emoji]) => `
@@ -118,7 +119,7 @@ ${compactHead()}
     <div class="avatar" data-go="profile">${ico.person}</div>
     <div class="bank-head__name" data-go="profile">${esc(s.user.name)} ${ico.chevR}</div>
     <div class="bank-head__spacer"></div>
-    <button class="pill-money">💰 К деньгам</button>
+    <button class="pill-money">${art.money} К деньгам</button>
   </div>
 
   <div class="acct">
@@ -136,7 +137,7 @@ ${compactHead()}
       <div class="acct__sum">0 BYN</div>
     </div>
     <div class="acct__spacer"></div>
-    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__cloud">☁️</span><span class="mini-card__num">3908</span><span class="mini-card__ps">МИР</span></div>
+    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__cloud">${art.cloud}</span><span class="mini-card__num">3908</span><span class="mini-card__ps">МИР</span></div>
   </div>
 
   <div class="promo-acct">
@@ -174,7 +175,7 @@ ${compactHead()}
       <div class="hero-banner__sub">Работа рядом — там же, где ваша зарплата. Отклик в два касания, ответ работодателя в чате.</div>
     </div>
     <button class="hero-banner__cta" data-go="rabota">Найти работу</button>
-    <div class="hero-banner__emoji">💼</div>
+    <div class="hero-banner__emoji">${art.briefcase}</div>
   </div>
 
   <div class="rail" style="padding-top:14px">
@@ -258,8 +259,8 @@ ${homeIndicator()}`;
 // ── Платежи ───────────────────────────────────────────────────────────────
 function payments() {
   const grid = [
-    ['📱', 'Мобильная связь'], ['🏠', 'ЖКХ'], ['🌐', 'Интернет'], ['🚗', 'Штрафы'],
-    ['🏦', 'Налоги'], ['📺', 'ТВ'], ['🎓', 'Образование'], ['🅿️', 'Парковка'],
+    [art.phone, 'Мобильная связь'], [art.home, 'ЖКХ'], [art.wifi, 'Интернет'], [art.car, 'Штрафы'],
+    [art.bank, 'Налоги'], [art.tv, 'ТВ'], [art.edu, 'Образование'], [art.parking, 'Парковка'],
   ];
   const html = `
 ${statusBar()}
@@ -272,11 +273,11 @@ ${statusBar()}
 <div class="scroll">
   <div class="searchrow"><div class="searchfield">${ico.search}<span>Поиск по услугам</span></div></div>
   <div class="blockcard">
-    <div class="blockrow"><div class="blockrow__ico">📲</div><div class="blockrow__body">
+    <div class="blockrow"><div class="blockrow__ico">${art.phoneOut}</div><div class="blockrow__body">
       <div class="blockrow__title">По номеру телефона</div><div class="blockrow__sub">В Альфа-Банк и другие банки</div></div>${`<svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg>`}</div>
-    <div class="blockrow"><div class="blockrow__ico">💳</div><div class="blockrow__body">
+    <div class="blockrow"><div class="blockrow__ico">${art.card}</div><div class="blockrow__body">
       <div class="blockrow__title">По номеру карты</div><div class="blockrow__sub">Между своими и чужими картами</div></div><svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
-    <div class="blockrow"><div class="blockrow__ico">🧾</div><div class="blockrow__body">
+    <div class="blockrow"><div class="blockrow__ico">${art.receipt}</div><div class="blockrow__body">
       <div class="blockrow__title">По реквизитам</div><div class="blockrow__sub">Юрлицам и ИП</div></div><svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
   </div>
   <div class="sec-head"><h2>Оплата услуг</h2></div>
@@ -285,9 +286,9 @@ ${statusBar()}
   </div>
   <div class="sec-head"><h2>Зарплата и доходы</h2></div>
   <div class="blockcard">
-    <div class="blockrow" data-go="rabota"><div class="blockrow__ico" style="background:#FDE9E7">💼</div><div class="blockrow__body">
+    <div class="blockrow" data-go="rabota"><div class="blockrow__ico" style="background:#FDE9E7">${art.briefcase}</div><div class="blockrow__body">
       <div class="blockrow__title">Альфа-Работа</div><div class="blockrow__sub">Найти работу с зарплатой на карту Альфа-Банка</div></div><svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
-    <div class="blockrow"><div class="blockrow__ico">📈</div><div class="blockrow__body">
+    <div class="blockrow"><div class="blockrow__ico">${art.chartUp}</div><div class="blockrow__body">
       <div class="blockrow__title">Зарплатный проект</div><div class="blockrow__sub">Для работодателей</div></div><svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
   </div>
   <div style="height:20px"></div>
@@ -312,12 +313,12 @@ function benefit(params = {}) {
   const segs = [['all', 'Всё'], ['offers', 'Предложения'], ['cashback', 'Кэшбэк и сервисы'], ['money', 'Деньги вам']];
 
   const services = [
-    ['work', '💼', 'Работа', 'новое'],
-    ['ins', '☂️', 'Страховки', 'до 10%'],
-    ['travel', '✈️', 'Тревел', 'до 10%'],
-    ['fuel', '💧', 'Заправки', 'до 3%'],
-    ['afisha', '🎟', 'Афиша', 'до 5%'],
-    ['sim', '📱', 'Связь', 'до 10%'],
+    ['work', art.briefcase, 'Работа', 'новое'],
+    ['ins', art.umbrella, 'Страховки', 'до 10%'],
+    ['travel', art.plane, 'Тревел', 'до 10%'],
+    ['fuel', art.droplet, 'Заправки', 'до 3%'],
+    ['afisha', art.ticket, 'Афиша', 'до 5%'],
+    ['sim', art.phone, 'Связь', 'до 10%'],
   ];
 
   const html = `
@@ -336,12 +337,12 @@ ${statusBar('15:17', 84)}
     <div class="tile pressable" style="width:236px;min-height:184px;background:#1F68EB;color:#fff">
       <h3 style="font-size:20px">SELA: до 30% кэшбэка</h3>
       <p style="color:rgba(255,255,255,.8)">21 августа на покупки от 3000 ₽ в SELA и SELA Home</p>
-      <div class="tile__emoji">3️⃣0️⃣</div>
+      <div class="tile__emoji">${bigNumber('30', 'blueDeep')}</div>
     </div>
     <div class="tile pressable" style="width:236px;min-height:184px;background:#6AF12A">
       <h3 style="font-size:20px">+1 категория кэшбэка</h3>
       <p style="color:rgba(27,27,27,.6)">Переводите зарплату и повышайте ставку по накоплениям</p>
-      <div class="tile__emoji">💚</div>
+      <div class="tile__emoji">${art.heartGreen}</div>
     </div>
   </div>
 
@@ -354,19 +355,19 @@ ${statusBar('15:17', 84)}
     <div class="balance-card__strip"><span>Начислим 10 сентября <b>162 ₽</b></span>${ico.chevR}</div>
   </div>
   <div class="info-card">
-    <span style="font-size:26px">🙂</span>
+    <span style="font-size:26px">${art.smile}</span>
     <span>Кэшбэк от банка, доходы от накоплений и рекомендаций — в разделе Моя выгода</span>
     ${ico.chevR}
   </div>
   <div class="duo">
-    <div class="duo__card pressable"><h3>Категории в августе</h3><div class="duo__art">🍔</div></div>
-    <div class="duo__card pressable" style="background:#C3D7FA"><h3>Получите суперкэшбэк</h3><p>В августе</p><div class="duo__art">🎡</div></div>
+    <div class="duo__card pressable"><h3>Категории в августе</h3><div class="duo__art">${art.burger}</div></div>
+    <div class="duo__card pressable" style="background:#C3D7FA"><h3>Получите суперкэшбэк</h3><p>В августе</p><div class="duo__art">${art.wheel}</div></div>
   </div>
 
   <div class="sec-head"><h2>Ещё больше выгоды</h2></div>
   <div class="duo" style="padding-top:0">
-    <div class="duo__card pressable"><h3>Предложения партнёров</h3><div class="duo__art">🏷</div></div>
-    <div class="duo__card pressable"><h3>Лучший кэшбэк</h3><div class="duo__art">⚡️</div></div>
+    <div class="duo__card pressable"><h3>Предложения партнёров</h3><div class="duo__art">${art.tag}</div></div>
+    <div class="duo__card pressable"><h3>Лучший кэшбэк</h3><div class="duo__art">${art.bolt}</div></div>
   </div>
 
   <div class="info-card" style="margin-top:10px">
@@ -374,7 +375,7 @@ ${statusBar('15:17', 84)}
       <div style="font-size:18px;font-weight:700;letter-spacing:-.02em">Промокоды</div>
       <div style="color:var(--ink-2);margin-top:3px">Выгодные покупки в наших сервисах и не только</div>
     </div>
-    <span style="font-size:34px">🎟</span>
+    <span style="font-size:34px">${art.ticket}</span>
   </div>
 
   <div class="services" style="padding-top:18px">
@@ -399,7 +400,7 @@ ${statusBar('15:17', 84)}
     <div class="tile pressable" style="width:280px;min-height:150px;background:#FFF0DC">
       <h3 style="font-size:20px">Найдите работу — получите 3000 ₽</h3>
       <p>Выйдите на работу через Альфа-Работу и получите бонус</p>
-      <div class="tile__emoji">💼</div>
+      <div class="tile__emoji">${art.briefcase}</div>
     </div>
   </div>
   <div style="height:20px"></div>
@@ -431,18 +432,18 @@ ${homeIndicator()}`;
 function history() {
   const days = [
     ['Сегодня', [
-      ['☕️', 'Кофемания', 'Кафе и рестораны', '−540 ₽'],
-      ['🚕', 'Яндекс Go', 'Такси', '−389 ₽'],
-      ['🛒', 'Пятёрочка', 'Супермаркеты', '−1 245,60 ₽'],
+      [art.coffee, 'Кофемания', 'Кафе и рестораны', '−540 ₽'],
+      [art.taxi, 'Яндекс Go', 'Такси', '−389 ₽'],
+      [art.cart, 'Пятёрочка', 'Супермаркеты', '−1 245,60 ₽'],
     ]],
     ['Вчера', [
-      ['💼', 'Альфа-Работа', 'Бонус за трудоустройство', '+3 000 ₽', true],
-      ['📱', 'МТС', 'Связь', '−650 ₽'],
-      ['🎬', 'Кинопоиск', 'Подписки', '−399 ₽'],
+      [art.briefcase, 'Альфа-Работа', 'Бонус за трудоустройство', '+3 000 ₽', true],
+      [art.phone, 'МТС', 'Связь', '−650 ₽'],
+      [art.clapper, 'Кинопоиск', 'Подписки', '−399 ₽'],
     ]],
     ['17 августа', [
-      ['🏦', 'Перевод себе', 'Между счетами', '−15 000 ₽'],
-      ['💰', 'Зарплата', 'ООО «Альфа-Пример»', '+142 500 ₽', true],
+      [art.bank, 'Перевод себе', 'Между счетами', '−15 000 ₽'],
+      [art.money, 'Зарплата', 'ООО «Альфа-Пример»', '+142 500 ₽', true],
     ]],
   ];
 
@@ -494,7 +495,7 @@ function chats() {
       const msgs = store.chat(r.id);
       const last = msgs[msgs.length - 1];
       return `<div class="listitem pressable" data-go="chat" data-params='${JSON.stringify({ id: r.id })}'>
-        <div class="listitem__ico" style="background:#FDE9E7">💼</div>
+        <div class="listitem__ico" style="background:#FDE9E7">${art.briefcase}</div>
         <div class="listitem__body">
           <div class="listitem__row">
             <span class="listitem__name">${esc(r.vacancy.company)}</span>
@@ -507,12 +508,12 @@ function chats() {
     }).join('');
 
   const stock = [
-    ['🔔', 'Уведомления', '15:08', 'Списание со счёта 4*7712; Перевод на сумму 900,00 RUB;…', '', '#FFF6E0'],
-    ['💬', 'Чат с банком', '14 мая', 'Комиссия за переводы через СБП:…', '', '#EF3124'],
-    ['🗂', 'Обращения в банк', '', 'Здесь можно подать обращение и посмотреть уже созданные', '', '#E4F0FF'],
-    ['🤩', 'Альфа-Выгодно', '10:41', 'Оплату за отель теперь можно ПОДЕЛИТЬ. Без коми…', '99+', '#F3E8FF'],
-    ['🆕', 'Что нового', '18 авг.', 'ААА — Альфа-Банк получил НАИВЫСШИЙ кредитный рейт…', '1', '#E8F5FF'],
-    ['📈', 'Про инвестиции', '17 авг.', 'Ви.ру: прибыль за первое полугодие выросла…', '1', '#FDE9E7'],
+    [art.bell, 'Уведомления', '15:08', 'Списание со счёта 4*7712; Перевод на сумму 900,00 RUB;…', '', '#FFF6E0'],
+    [art.speech, 'Чат с банком', '14 мая', 'Комиссия за переводы через СБП:…', '', '#EF3124'],
+    [art.folderTabs, 'Обращения в банк', '', 'Здесь можно подать обращение и посмотреть уже созданные', '', '#E4F0FF'],
+    [art.star, 'Альфа-Выгодно', '10:41', 'Оплату за отель теперь можно ПОДЕЛИТЬ. Без коми…', '99+', '#F3E8FF'],
+    [art.new, 'Что нового', '18 авг.', 'ААА — Альфа-Банк получил НАИВЫСШИЙ кредитный рейт…', '1', '#E8F5FF'],
+    [art.chartUp, 'Про инвестиции', '17 авг.', 'Ви.ру: прибыль за первое полугодие выросла…', '1', '#FDE9E7'],
   ].map(([e, name, time, text, badge, bg]) => `
     <div class="listitem pressable">
       <div class="listitem__ico" style="background:${bg}">${e}</div>
@@ -566,13 +567,13 @@ ${statusBar()}
     <div style="font-size:15px;color:var(--ink-2);margin-top:4px">+7 (999) ••• 12-34</div>
   </div>
   <div class="blockcard">
-    <div class="blockrow" data-go="rabota"><div class="blockrow__ico" style="background:#FDE9E7">💼</div>
+    <div class="blockrow" data-go="rabota"><div class="blockrow__ico" style="background:#FDE9E7">${art.briefcase}</div>
       <div class="blockrow__body"><div class="blockrow__title">Альфа-Работа</div>
       <div class="blockrow__sub">${s.responses.length ? `Откликов: ${s.responses.length}` : 'Резюме и отклики'}</div></div>
       <svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
-    <div class="blockrow"><div class="blockrow__ico">🔐</div><div class="blockrow__body"><div class="blockrow__title">Безопасность</div></div>
+    <div class="blockrow"><div class="blockrow__ico">${art.lock}</div><div class="blockrow__body"><div class="blockrow__title">Безопасность</div></div>
       <svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
-    <div class="blockrow"><div class="blockrow__ico">⚙️</div><div class="blockrow__body"><div class="blockrow__title">Настройки</div></div>
+    <div class="blockrow"><div class="blockrow__ico">${art.gear}</div><div class="blockrow__body"><div class="blockrow__title">Настройки</div></div>
       <svg class="blockrow__chev" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round"/></svg></div>
   </div>
 </div>

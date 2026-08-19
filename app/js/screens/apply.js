@@ -1,6 +1,7 @@
 // Резюме, отклик и VCV-скрининг: тест + видеоответы на вопросы работодателя.
 
 import { ico, statusBar, homeIndicator, esc, toast, sleep, seeded, salaryText } from '../util.js';
+import { art } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 import { getJob, matchPct } from './rabota.js';
@@ -130,7 +131,7 @@ function resumes() {
   const list = s.resumes.length
     ? s.resumes.map((r) => `
       <div class="res-card pressable" data-res="${r.id}">
-        <div class="res-card__ico">${r.type === 'link' ? '🔗' : '📄'}</div>
+        <div class="res-card__ico">${r.type === 'link' ? art.link : art.doc}</div>
         <div class="res-card__body">
           <div class="res-card__name">${esc(r.name)}</div>
           <div class="res-card__meta ${r.status === 'ready' ? 'res-card__meta--ok' : ''}">
@@ -143,7 +144,7 @@ function resumes() {
         </button>
       </div>`).join('')
     : `<div class="empty">
-        <div class="empty__emoji">📂</div>
+        <div class="empty__emoji">${art.folder}</div>
         <div class="empty__title">Пока нет резюме</div>
         <div class="empty__text">Добавьте ссылку с сайта по поиску работы или прикрепите файл — этого хватит для отклика</div>
       </div>`;
@@ -185,11 +186,11 @@ ${statusBar()}
 <div class="scroll">
   <div style="padding:8px var(--pad) 22px"><div style="font-size:28px;font-weight:800;letter-spacing:-.03em">Новое резюме</div></div>
   <button class="pick-row pressable" data-go="resumeLink">
-    <span class="pick-row__ico">🔗</span>
+    <span class="pick-row__ico">${art.link}</span>
     <span><span class="pick-row__title">Ссылка</span><span class="pick-row__sub">С сайта по поиску работы</span></span>
   </button>
   <button class="pick-row pressable" data-go="resumeFile">
-    <span class="pick-row__ico">📎</span>
+    <span class="pick-row__ico">${art.clip}</span>
     <span><span class="pick-row__title">Файл</span><span class="pick-row__sub">В формате PDF не больше 5 МБ</span></span>
   </button>
   <div class="hint" style="padding-top:14px">Данные из резюме используются только для отклика и не передаются третьим лицам.</div>
@@ -235,7 +236,7 @@ ${statusBar()}
 <div class="navbar"><button class="navbar__btn" data-go="back">${ico.chevL}</button><div class="navbar__title">Файл резюме</div></div>
 <div class="scroll">
   <div class="stub-box" style="margin-top:8px">
-    <div class="stub-box__emoji">📎</div>
+    <div class="stub-box__emoji">${art.clip}</div>
     <div class="stub-box__title">Загрузка файлов — заглушка</div>
     <div class="stub-box__text">В прототипе загрузка PDF отключена. В боевой версии здесь открывается выбор файла из памяти телефона, iCloud или Google Drive: PDF, DOC, DOCX до 5 МБ.</div>
   </div>
@@ -265,7 +266,7 @@ function apply(params) {
   const list = s.resumes.length
     ? s.resumes.map((r, i) => `
       <label class="res-card ${i === 0 ? 'is-sel' : ''}" data-pick="${r.id}">
-        <div class="res-card__ico">${r.type === 'link' ? '🔗' : '📄'}</div>
+        <div class="res-card__ico">${r.type === 'link' ? art.link : art.doc}</div>
         <div class="res-card__body">
           <div class="res-card__name">${esc(r.name)}</div>
           <div class="res-card__meta">${r.type === 'link' ? 'Ссылка' : 'PDF'} · ${r.status === 'ready' ? 'проверено' : 'проверяем'}</div>
@@ -273,7 +274,7 @@ function apply(params) {
         <span class="opt__mark"></span>
       </label>`).join('')
     : `<div class="stub-box">
-        <div class="stub-box__emoji">📂</div>
+        <div class="stub-box__emoji">${art.folder}</div>
         <div class="stub-box__title">Нужно резюме</div>
         <div class="stub-box__text">Прикрепите файл или вставьте ссылку с сайта по поиску работы — это займёт минуту</div>
       </div>`;
@@ -300,7 +301,7 @@ ${statusBar()}
   </div>
 
   <div class="info-card" style="background:#FDE9E7">
-    <span style="font-size:26px">🎥</span>
+    <span style="font-size:26px">${art.camera}</span>
     <span>После отклика — короткий VCV-скрининг: 4 вопроса теста и 3 видеоответа. Занимает 5–7 минут и повышает шанс ответа.</span>
   </div>
   <div style="height:16px"></div>
@@ -348,7 +349,7 @@ ${statusBar()}
 <div class="navbar"><button class="navbar__btn" data-go="back">${ico.close}</button><div class="navbar__title">VCV-скрининг</div></div>
 <div class="scroll">
   <div class="vcv-hero">
-    <div class="vcv-hero__emoji">🎬</div>
+    <div class="vcv-hero__emoji">${art.clapper}</div>
     <div class="vcv-hero__title">Пройдите скрининг —<br>отклик увидят первым</div>
     <div class="vcv-hero__text">Работодатель ${esc(job.company)} смотрит такие отклики в первую очередь: он сразу видит ответы и видео, а не только резюме.</div>
   </div>
@@ -364,7 +365,7 @@ ${statusBar()}
       <div class="vcv-step__s">Вы увидите оценку до отправки и решите, отправлять ли отклик</div></div></div>
   </div>
   <div class="info-card">
-    <span style="font-size:24px">⏱</span><span>Займёт 5–7 минут. Прервать можно в любой момент — прогресс сохранится.</span>
+    <span style="font-size:24px">${art.clock}</span><span>Займёт 5–7 минут. Прервать можно в любой момент — прогресс сохранится.</span>
   </div>
   <div class="hint" style="padding-top:14px">Для видеоответов понадобится доступ к камере и микрофону. Если доступа нет, скрининг пройдёт в демо-режиме.</div>
   <div style="height:12px"></div>
@@ -460,7 +461,7 @@ ${statusBar()}
   <div class="q-sub">${esc(item.sub)}</div>
 
   <div class="recorder" id="rec">
-    <div class="recorder__ph" id="ph"><b>🎥</b>Запрашиваем доступ к камере…</div>
+    <div class="recorder__ph" id="ph"><b>${art.camera}</b>Запрашиваем доступ к камере…</div>
     <video id="cam" playsinline muted autoplay style="display:none"></video>
     <div class="recorder__rec" id="recBadge" style="display:none"><i></i>ЗАПИСЬ</div>
     <div class="recorder__timer" id="timer" style="display:none">0:00</div>
@@ -509,7 +510,7 @@ ${statusBar()}
           live = true;
         } catch {
           live = false;
-          ph.innerHTML = '<b>🎥</b>Камера недоступна.<br>Запишем ответ в демо-режиме — сценарий не прервётся.';
+          ph.innerHTML = '<b>${art.camera}</b>Камера недоступна.<br>Запишем ответ в демо-режиме — сценарий не прервётся.';
         }
       })();
 
@@ -660,7 +661,7 @@ ${statusBar()}
   ${crit('Соответствие профилю вакансии', sc.profilePct, sc.profilePct >= 70 ? 'ok' : 'mid')}
 
   <div class="info-card" style="margin-top:16px">
-    <span style="font-size:24px">🔒</span>
+    <span style="font-size:24px">${art.lock}</span>
     <span>Работодатель ${esc(job.company)} увидит оценку, ответы теста и видео. Другим компаниям результат не показывается.</span>
   </div>
   <div class="hint" style="padding-top:14px">Оценка в прототипе считается арифметически по вашим ответам. В боевой версии — модель, обученная на успешных наймах, с обязательной проверкой человеком.</div>

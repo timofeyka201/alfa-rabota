@@ -2,6 +2,7 @@
 // страница условий для работодателей.
 
 import { ico, statusBar, homeIndicator, esc, toast, salaryText, expText, num, seeded, plural, logoColor, initials, ruDate } from '../util.js';
+import { art, starMark } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 import {
@@ -34,7 +35,7 @@ export function vacancyCard(v, opts = {}) {
   else if (v.partner) tags.push('<span class="tag tag--partner">Партнёр Alfa Group</span>');
   tags.push(`<span class="tag">${expText(v.experience)}</span>`);
   if (v.format) tags.push(`<span class="tag">${FORMAT_LABEL[v.format] || ''}</span>`);
-  if (match >= 85) tags.push(`<span class="tag tag--match">👍 Подходит на ${match}%</span>`);
+  if (match >= 85) tags.push(`<span class="tag tag--match">${art.thumb} Подходит на ${match}%</span>`);
 
   return `<div class="vac pressable" data-go="vacancy" data-params='${JSON.stringify({ id: v.id })}'>
     <div class="vac__tags">${tags.join('')}</div>
@@ -88,11 +89,11 @@ ${statusBar()}
 
 <div class="duo-nav">
   <button class="duo-nav__card pressable" data-go="responses">
-    <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">💛</span>
+    <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartYellow}</span>
     ${s.responses.length ? `<span class="duo-nav__count">${s.responses.length}</span>` : ''}
   </button>
   <button class="duo-nav__card pressable" data-go="resumes">
-    <span class="duo-nav__label">Резюме</span><span class="duo-nav__emoji">📂</span>
+    <span class="duo-nav__label">Резюме</span><span class="duo-nav__emoji">${art.folder}</span>
     ${s.resumes.length ? `<span class="duo-nav__count">${s.resumes.length}</span>` : ''}
   </button>
 </div>
@@ -144,7 +145,7 @@ ${homeIndicator()}`;
         if (!list.length) {
           feed.innerHTML = `
             <div class="empty">
-              <div class="empty__emoji">🔍</div>
+              <div class="empty__emoji">${art.search}</div>
               <div class="empty__title">Ничего не нашлось</div>
               <div class="empty__text">Попробуйте изменить фильтры или запрос</div>
             </div>
@@ -343,7 +344,7 @@ ${statusBar()}
       ${v.kind === 'alfa' ? '<span class="tag tag--alfa">Работа в Альфа-Банке</span>' : ''}
       ${v.partner ? '<span class="tag tag--partner">Партнёр Alfa Group</span>' : ''}
       ${v.source === 'trudvsem' ? '<span class="tag">Работа России</span>' : ''}
-      <span class="tag tag--match">👍 Подходит на ${match}%</span>
+      <span class="tag tag--match">${art.thumb} Подходит на ${match}%</span>
     </div>
 
     <div class="vd__title">${esc(v.title)}</div>
@@ -361,7 +362,7 @@ ${statusBar()}
       <div class="vd__logo" style="background:${logoColor(v.company)}">${esc(initials(v.company))}</div>
       <div>
         <div class="vd__cname">${esc(v.company)}${v.kind === 'alfa' || v.partner ? ico.verified : ''}</div>
-        <div class="vd__crate">★ ${(4 + seeded(v.company, 5) * 0.9).toFixed(1).replace('.', ',')} · ${100 + Math.floor(seeded(v.company, 9) * 1400)} отзывов</div>
+        <div class="vd__crate">${starMark} ${(4 + seeded(v.company, 5) * 0.9).toFixed(1).replace('.', ',')} · ${100 + Math.floor(seeded(v.company, 9) * 1400)} отзывов</div>
       </div>
     </div>
 
@@ -381,7 +382,7 @@ ${statusBar()}
 
     ${v.kind === 'alfa' || v.partner ? `
     <div class="info-card" style="margin:20px 0 0">
-      <span style="font-size:26px">💳</span>
+      <span style="font-size:26px">${art.card}</span>
       <span>Зарплата приходит на карту Альфа-Банка — видна в приложении в день выплаты</span>
     </div>` : ''}
 
@@ -580,7 +581,7 @@ ${statusBar()}
 <div class="navbar"><button class="navbar__btn" data-go="back">${ico.close}</button></div>
 <div class="scroll">
   <div class="vcv-hero" style="padding-top:32px">
-    <div class="vcv-hero__emoji">🤝</div>
+    <div class="vcv-hero__emoji">${art.handshake}</div>
     <div class="vcv-hero__title">Заявка принята</div>
     <div class="vcv-hero__text">Это заглушка прототипа. В боевой версии здесь открывается форма с ИНН, контактом ответственного и выбором тарифа, а заявка уходит в CRM корпоративного блока.</div>
   </div>

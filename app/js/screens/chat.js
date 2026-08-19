@@ -1,6 +1,7 @@
 // Отклики и чат соискателя с работодателем.
 
 import { ico, statusBar, homeIndicator, esc, toast, timeHM, ruDate, logoColor, initials, seeded, salaryText } from '../util.js';
+import { art } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 
@@ -98,7 +99,7 @@ function responses() {
       </div>`;
     }).join('')
     : `<div class="empty">
-        <div class="empty__emoji">💛</div>
+        <div class="empty__emoji">${art.heartYellow}</div>
         <div class="empty__title">Откликов пока нет</div>
         <div class="empty__text">Найдите вакансию и нажмите «Откликнуться» — здесь появится статус и чат с работодателем</div>
       </div>`;

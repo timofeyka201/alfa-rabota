@@ -2,6 +2,7 @@
 
 import { init, register, nav } from './router.js';
 import { store } from './store.js';
+import { mountArtDefs } from './art.js';
 import { bankScreens } from './screens/bank.js';
 import { rabotaScreens } from './screens/rabota.js';
 import { applyScreens } from './screens/apply.js';
@@ -16,6 +17,7 @@ for (const [name, factory] of Object.entries({
   register(name, factory);
 }
 
+mountArtDefs();
 init(document.getElementById('app'));
 nav.tab('home');
 

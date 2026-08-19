@@ -19,6 +19,12 @@
 .view svg { width: 20px; height: 20px; flex: 0 0 auto; }
 .statusbar svg { width: 17px; height: 13px; }
 
+/* Объёмные иллюстрации занимают место эмодзи: масштаб берут от font-size
+   контейнера, поэтому подставляются в готовую вёрстку без правок размеров. */
+.view svg.art { width: 1.2em; height: 1.2em; overflow: visible; }
+/* Инлайновая иконка внутри строки текста — садится на базовую линию */
+.view svg.art--inline { width: 1em; height: 1em; vertical-align: -.14em; }
+
 .view.anim-in  { animation: slideIn .28s cubic-bezier(.2,.85,.25,1); }
 @keyframes slideIn { from { transform: translateX(34px); opacity: 0 } to { transform: none; opacity: 1 } }
 

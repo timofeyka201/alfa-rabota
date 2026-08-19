@@ -1,3 +1,5 @@
+import { art } from './art.js';
+
 // Простейший стековый роутер: экран = функция, возвращающая разметку и mount().
 
 const registry = new Map();
@@ -35,7 +37,7 @@ function paint(anim) {
   const entry = stack[stack.length - 1];
   const factory = registry.get(entry.name);
   if (!factory) {
-    rootEl.innerHTML = `<div class="view"><div class="empty"><div class="empty__emoji">🛠</div>
+    rootEl.innerHTML = `<div class="view"><div class="empty"><div class="empty__emoji">${art.gear}</div>
       <div class="empty__title">Экран «${entry.name}» ещё в работе</div></div></div>`;
     return;
   }

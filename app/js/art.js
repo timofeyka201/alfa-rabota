@@ -1,0 +1,562 @@
+// Объёмные иллюстрации вместо эмодзи. Все нарисованы вручную в едином стиле:
+// насыщенный градиент корпуса, тёмная грань снизу для объёма, белый блик сверху
+// и мягкая тень под предметом. Общие градиенты живут в одном скрытом <svg>,
+// поэтому иконки в разметке — это лёгкие ссылки на url(#…), а не копии defs.
+
+const GRADS = [
+  ['red', '#FF7A63', '#EF3124'],
+  ['redDeep', '#EF3124', '#A5170E'],
+  ['orange', '#FFC46B', '#F5820B'],
+  ['yellow', '#FFE070', '#F5B31E'],
+  ['blue', '#79B0FF', '#1F68EB'],
+  ['blueDeep', '#2E7BF0', '#0C3C9E'],
+  ['purple', '#C0A9FF', '#6D3BF0'],
+  ['violet', '#E3D7FF', '#B39BFF'],
+  ['green', '#86EFA4', '#12A05C'],
+  ['lime', '#D3FA63', '#8FD41C'],
+  ['cyan', '#9BF3E8', '#12B3A4'],
+  ['pink', '#FFB3D0', '#EE4E8B'],
+  ['gray', '#FBFCFD', '#D2D6DE'],
+  ['steel', '#C9CFDA', '#8A93A3'],
+  ['dark', '#565B66', '#22252B'],
+  ['brown', '#D9A066', '#9C5F28'],
+  ['skin', '#FFD9A8', '#E8A860'],
+];
+
+/** Скрытый <svg> с градиентами и фильтрами — вставляется в документ один раз. */
+export function mountArtDefs() {
+  if (document.getElementById('art-defs')) return;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('id', 'art-defs');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden');
+  svg.innerHTML = `<defs>
+    ${GRADS.map(([n, a, b]) => `
+      <linearGradient id="g-${n}" x1="0" y1="0" x2=".35" y2="1">
+        <stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/>
+      </linearGradient>`).join('')}
+    <linearGradient id="g-gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="g-glossR" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+      <stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="g-rainbow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF5B8D"/><stop offset=".35" stop-color="#FFC44D"/>
+      <stop offset=".7" stop-color="#4ED8C0"/><stop offset="1" stop-color="#6C8BFF"/>
+    </linearGradient>
+    <radialGradient id="g-shadow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1B1B1B" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#1B1B1B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g-glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>`;
+  document.body.appendChild(svg);
+}
+
+// ── Строительные блоки ────────────────────────────────────────────────────
+const svg = (body, vb = '0 0 64 64') =>
+  `<svg class="art" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+
+/** Мягкая тень под предметом. */
+const shadow = (cx = 32, cy = 57, rx = 19, ry = 5) =>
+  `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#g-shadow)"/>`;
+
+/** Белый блик — то, что делает предмет «глянцевым». */
+const gloss = (d, o = 1) => `<path d="${d}" fill="url(#g-gloss)" opacity="${o}"/>`;
+
+const A = {}; // сюда собираем иллюстрации
+
+// ── Сервисы (крупные плитки 84px) ─────────────────────────────────────────
+A.briefcase = svg(`${shadow()}
+  <path d="M24 18a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v4h-5v-3a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v3h-5z" fill="#C7CCD6"/>
+  <rect x="8" y="21" width="48" height="30" rx="6" fill="url(#g-redDeep)"/>
+  <rect x="8" y="21" width="48" height="15" rx="6" fill="url(#g-red)"/>
+  <rect x="26" y="31" width="12" height="8" rx="2.5" fill="#8E1710"/>
+  <rect x="27.5" y="32.5" width="9" height="5" rx="1.5" fill="#FFC9C3"/>
+  ${gloss('M12 23h18a30 30 0 0 0-9 12H12a2 2 0 0 1-2-2V25a2 2 0 0 1 2-2z', .8)}`);
+
+A.umbrella = svg(`${shadow(34, 57, 13, 4)}
+  <path d="M32 8c13 0 24 10 25 22H7C8 18 19 8 32 8z" fill="url(#g-redDeep)"/>
+  <path d="M32 8c5 0 9 10 9 22H23c0-12 4-22 9-22z" fill="url(#g-red)"/>
+  <path d="M32 8c13 0 24 10 25 22h-9c-1-12-7-22-16-22z" fill="#B41C11"/>
+  <path d="M30 30h4v18a5 5 0 0 1-10 0v-2h4v2a1 1 0 0 0 2 0z" fill="#C7CCD6"/>
+  <path d="M30 30h4v18a5 5 0 0 1-3 4.6V30z" fill="#9AA2B0"/>
+  ${gloss('M14 28c2-9 8-15 14-17-5 5-8 10-9 17z', .9)}`);
+
+A.plane = svg(`${shadow(32, 56, 17, 4)}
+  <path d="M6 34 54 12c4-2 7 1 5 5L38 58l-7-15z" fill="url(#g-redDeep)"/>
+  <path d="M6 34 54 12c4-2 7 1 5 5L31 43z" fill="url(#g-red)"/>
+  <path d="m31 43 7 15 3-8z" fill="#8E1710"/>
+  <path d="M20 40h9l-2 11-5-6z" fill="url(#g-orange)"/>
+  ${gloss('M12 33 50 15 30 39z', .55)}`);
+
+A.droplet = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M32 6c9 12 16 20 16 29a16 16 0 0 1-32 0c0-9 7-17 16-29z" fill="url(#g-redDeep)"/>
+  <path d="M32 6c5 7 9 12 11 17-3 6-9 9-16 8-4-1-6-4-7-8 3-6 8-11 12-17z" fill="url(#g-red)"/>
+  <ellipse cx="24" cy="40" rx="4.5" ry="6" fill="url(#g-glow)" opacity=".75"/>
+  ${gloss('M32 10c3 5 6 9 8 13-4-3-9-3-13 0 1-5 3-9 5-13z', .7)}`);
+
+A.ticket = svg(`${shadow()}
+  <path d="M10 16h44a4 4 0 0 1 4 4v6a6 6 0 0 0 0 12v6a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4v-6a6 6 0 0 0 0-12v-6a4 4 0 0 1 4-4z" fill="url(#g-rainbow)"/>
+  <path d="M10 16h44a4 4 0 0 1 4 4v4H6v-4a4 4 0 0 1 4-4z" fill="#fff" opacity=".28"/>
+  <path d="M40 18v4m0 6v4m0 6v4m0 6v4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".85" stroke-dasharray="4 5"/>
+  <circle cx="21" cy="32" r="7" fill="#fff" opacity=".9"/>
+  <path d="m21 27 1.5 3.2 3.5.5-2.5 2.4.6 3.4-3.1-1.6-3.1 1.6.6-3.4-2.5-2.4 3.5-.5z" fill="#EE4E8B"/>`);
+
+A.sim = svg(`${shadow(32, 57, 14, 4)}
+  <rect x="14" y="6" width="36" height="52" rx="8" fill="url(#g-dark)"/>
+  <rect x="17" y="9" width="30" height="46" rx="5.5" fill="url(#g-pink)"/>
+  <rect x="17" y="9" width="30" height="20" rx="5.5" fill="#fff" opacity=".22"/>
+  <rect x="24" y="18" width="16" height="12" rx="2.5" fill="#FFE070"/>
+  <path d="M24 22h16M24 26h16M30 18v12M34 18v12" stroke="#C98A0B" stroke-width="1.3"/>
+  <rect x="22" y="38" width="20" height="3" rx="1.5" fill="#fff" opacity=".55"/>
+  <rect x="22" y="45" width="13" height="3" rx="1.5" fill="#fff" opacity=".35"/>`);
+
+// ── Сторис и крупные плитки ───────────────────────────────────────────────
+A.hundred = svg(`${shadow(30, 57, 20, 4)}
+  <text x="29" y="47" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="26"
+        font-weight="800" fill="#8E1710" letter-spacing="-1.5">100</text>
+  <text x="27" y="45" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="26"
+        font-weight="800" fill="url(#g-red)" letter-spacing="-1.5">100</text>
+  <circle cx="50" cy="19" r="12" fill="url(#g-lime)"/>
+  <circle cx="50" cy="19" r="12" fill="url(#g-glossR)"/>
+  <path d="M45.5 24.5 54.5 13.5" stroke="#2F6B08" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="46.5" cy="15.5" r="2.4" fill="none" stroke="#2F6B08" stroke-width="2"/>
+  <circle cx="53.5" cy="22.5" r="2.4" fill="none" stroke="#2F6B08" stroke-width="2"/>`);
+
+A.speech = svg(`${shadow(30, 57, 16, 4)}
+  <path d="M10 12h44a5 5 0 0 1 5 5v22a5 5 0 0 1-5 5H28l-12 9v-9h-6a5 5 0 0 1-5-5V17a5 5 0 0 1 5-5z" fill="url(#g-cyan)"/>
+  <path d="M10 12h44a5 5 0 0 1 5 5v6H5v-6a5 5 0 0 1 5-5z" fill="#fff" opacity=".3"/>
+  <path d="M32 38c-7-5-11-8-11-13a5.5 5.5 0 0 1 11-2 5.5 5.5 0 0 1 11 2c0 5-4 8-11 13z" fill="url(#g-redDeep)"/>
+  <path d="M32 25a5.5 5.5 0 0 0-9-3 5.5 5.5 0 0 1 8 1z" fill="#fff" opacity=".45"/>`);
+
+A.leaf = svg(`${shadow(32, 57, 14, 4)}
+  <ellipse cx="32" cy="34" rx="18" ry="21" fill="url(#g-green)"/>
+  <ellipse cx="32" cy="34" rx="18" ry="21" fill="url(#g-glossR)"/>
+  <ellipse cx="32" cy="36" rx="9" ry="11" fill="#0B5E37" opacity=".55"/>
+  <ellipse cx="32" cy="36" rx="6" ry="7.5" fill="#C9A227"/>
+  <path d="M32 13c4 0 6 3 6 6-4 1-7-1-8-4z" fill="#3F8A2B"/>`);
+
+A.gift = svg(`${shadow()}
+  <rect x="10" y="26" width="44" height="26" rx="5" fill="url(#g-redDeep)"/>
+  <rect x="10" y="26" width="44" height="10" rx="4" fill="url(#g-red)"/>
+  <rect x="7" y="19" width="50" height="11" rx="4" fill="url(#g-red)"/>
+  <rect x="28" y="19" width="8" height="33" fill="#FFD84D"/>
+  <path d="M32 19c-4-8-14-8-14-2 0 4 7 4 14 2zM32 19c4-8 14-8 14-2 0 4-7 4-14 2z" fill="#FFD84D"/>
+  <circle cx="32" cy="18" r="3.5" fill="#F5B31E"/>
+  ${gloss('M12 28h14l-3 6H12z', .7)}`);
+
+// ── Деньги, карты, банк ───────────────────────────────────────────────────
+A.card = svg(`${shadow()}
+  <rect x="6" y="16" width="52" height="33" rx="6" fill="url(#g-redDeep)"/>
+  <rect x="6" y="16" width="52" height="13" rx="6" fill="url(#g-red)"/>
+  <rect x="6" y="24" width="52" height="6" fill="#7E140D"/>
+  <rect x="12" y="36" width="16" height="7" rx="2" fill="#FFD84D"/>
+  <path d="M12 38h16M12 41h16M17 36v7M23 36v7" stroke="#C98A0B" stroke-width=".9"/>
+  <circle cx="45" cy="40" r="5" fill="#fff" opacity=".55"/>
+  <circle cx="50" cy="40" r="5" fill="#fff" opacity=".35"/>`);
+
+A.wallet = svg(`${shadow()}
+  <rect x="7" y="16" width="50" height="34" rx="7" fill="url(#g-purple)"/>
+  <rect x="7" y="16" width="50" height="13" rx="7" fill="#fff" opacity=".25"/>
+  <path d="M38 28h21a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H38a6 6 0 0 1 0-12z" fill="#4B21C4"/>
+  <circle cx="44" cy="34" r="3.4" fill="#FFD84D"/>
+  ${gloss('M11 19h20l-6 9H11z', .55)}`);
+
+A.money = svg(`${shadow()}
+  <rect x="8" y="20" width="48" height="28" rx="5" fill="url(#g-green)"/>
+  <rect x="8" y="20" width="48" height="10" rx="5" fill="#fff" opacity=".28"/>
+  <circle cx="32" cy="34" r="9" fill="#0B6E3F" opacity=".35"/>
+  <text x="32" y="40" text-anchor="middle" font-family="Inter,Arial,sans-serif"
+        font-size="15" font-weight="800" fill="#fff">₽</text>
+  <path d="M14 26v16M50 26v16" stroke="#fff" stroke-width="1.6" opacity=".5" stroke-linecap="round"/>`);
+
+A.bank = svg(`${shadow()}
+  <path d="M32 8 58 22H6z" fill="url(#g-blue)"/>
+  <path d="M32 8 58 22H32z" fill="#1350C0"/>
+  <rect x="6" y="22" width="52" height="5" rx="2" fill="#0C3C9E"/>
+  <rect x="12" y="27" width="7" height="19" fill="url(#g-steel)"/>
+  <rect x="28" y="27" width="7" height="19" fill="url(#g-steel)"/>
+  <rect x="44" y="27" width="7" height="19" fill="url(#g-steel)"/>
+  <rect x="6" y="46" width="52" height="7" rx="3" fill="url(#g-blueDeep)"/>
+  ${gloss('M14 27h4v18h-4z', .8)}`);
+
+A.chartUp = svg(`${shadow()}
+  <rect x="6" y="12" width="52" height="40" rx="7" fill="url(#g-gray)"/>
+  <rect x="12" y="34" width="8" height="13" rx="2.5" fill="url(#g-blue)"/>
+  <rect x="24" y="26" width="8" height="21" rx="2.5" fill="url(#g-cyan)"/>
+  <rect x="36" y="30" width="8" height="17" rx="2.5" fill="url(#g-purple)"/>
+  <rect x="48" y="18" width="8" height="29" rx="2.5" fill="url(#g-green)"/>
+  <path d="M13 30 27 20l12 5 14-11" stroke="#EF3124" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="53" cy="14" r="3.4" fill="#EF3124"/>`);
+
+A.safe = svg(`${shadow()}
+  <rect x="8" y="10" width="48" height="44" rx="7" fill="url(#g-redDeep)"/>
+  <rect x="8" y="10" width="48" height="16" rx="7" fill="url(#g-red)"/>
+  <rect x="14" y="16" width="36" height="32" rx="5" fill="#7E140D"/>
+  <circle cx="32" cy="32" r="10" fill="url(#g-steel)"/>
+  <circle cx="32" cy="32" r="5" fill="#5E6675"/>
+  <path d="M32 22v-4M32 46v-4M22 32h-4M46 32h-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`);
+
+A.percent = svg(`${shadow(32, 57, 17, 4)}
+  <circle cx="32" cy="31" r="24" fill="url(#g-redDeep)"/>
+  <circle cx="32" cy="31" r="24" fill="url(#g-glossR)"/>
+  <path d="M21 42 43 20" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="23" cy="23" r="5.5" fill="none" stroke="#fff" stroke-width="4"/>
+  <circle cx="41" cy="39" r="5.5" fill="none" stroke="#fff" stroke-width="4"/>`);
+
+A.alfaA = svg(`${shadow()}
+  <rect x="8" y="8" width="48" height="48" rx="12" fill="url(#g-redDeep)"/>
+  <rect x="8" y="8" width="48" height="24" rx="12" fill="url(#g-red)"/>
+  <path d="M32 17 45 46h-8.4l-2-5h-5.2l-2 5H19zm0 11-2.2 8h4.4z" fill="#fff"/>
+  <rect x="24" y="49" width="16" height="3.4" rx="1.7" fill="#fff"/>`);
+
+A.coin = svg(`${shadow(32, 57, 15, 4)}
+  <ellipse cx="32" cy="42" rx="21" ry="8" fill="#C98A0B"/>
+  <rect x="11" y="24" width="42" height="18" fill="#E0A20F"/>
+  <ellipse cx="32" cy="24" rx="21" ry="8" fill="url(#g-yellow)"/>
+  <ellipse cx="32" cy="24" rx="14" ry="5" fill="#fff" opacity=".35"/>
+  <text x="32" y="30" text-anchor="middle" font-family="Inter,Arial,sans-serif"
+        font-size="12" font-weight="800" fill="#9A6A05">₽</text>`);
+
+// ── Люди и взаимодействие ─────────────────────────────────────────────────
+A.handshake = svg(`${shadow()}
+  <path d="M4 28h13v14H4z" rx="3" fill="url(#g-blue)"/>
+  <path d="M47 28h13v14H47z" fill="url(#g-redDeep)"/>
+  <path d="M17 30c4-4 9-5 15-3 3 1 6 1 9 0l3 12c-4 2-8 2-12 0-3 3-7 4-11 2z" fill="url(#g-skin)"/>
+  <path d="M32 27c5-2 10-2 15 1l-3 12c-4 2-8 1-12-2z" fill="#E8A860"/>
+  <path d="M22 34c3 2 6 4 9 5M26 30c3 2 6 4 9 5" stroke="#B87A38" stroke-width="1.6" stroke-linecap="round"/>
+  ${gloss('M6 30h9v5H6z', .6)}`);
+
+A.person = svg(`${shadow(32, 57, 16, 4)}
+  <circle cx="32" cy="22" r="11" fill="url(#g-blue)"/>
+  <circle cx="32" cy="22" r="11" fill="url(#g-glossR)"/>
+  <path d="M11 54c0-11 9-17 21-17s21 6 21 17z" fill="url(#g-blueDeep)"/>
+  <path d="M11 54c0-11 9-17 21-17v17z" fill="url(#g-blue)"/>`);
+
+A.globe = svg(`${shadow(32, 57, 15, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-cyan)"/>
+  <circle cx="32" cy="30" r="24" fill="url(#g-glossR)"/>
+  <path d="M8 30h48M32 6c7 7 7 41 0 48M32 6c-7 7-7 41 0 48" stroke="#0B7F73" stroke-width="1.8" fill="none" opacity=".65"/>
+  <path d="M14 39c8-3 14 3 22 1s10-6 14-3M14 20c8 3 14-3 22-1s10 6 14 3" stroke="#0B7F73" stroke-width="1.8" fill="none" opacity=".5"/>
+  <path d="M20 16c5 1 8 4 6 8s-8 2-9 6 4 6 3 10c-8-5-10-18 0-24z" fill="#12B3A4" opacity=".55"/>`);
+
+A.arrows = svg(`${shadow(32, 57, 15, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-lime)"/>
+  <circle cx="32" cy="30" r="24" fill="url(#g-glossR)"/>
+  <path d="M20 24h18l-5-5 3-3 10 10-10 10-3-3 5-5H20z" fill="#3D7A08"/>
+  <path d="M44 38H26l5 5-3 3-10-10 10-10 3 3-5 5h18z" fill="#2F6B08" opacity=".55"/>`);
+
+// ── Документы и файлы ─────────────────────────────────────────────────────
+A.folder = svg(`${shadow()}
+  <path d="M6 18a5 5 0 0 1 5-5h13l5 6h19a5 5 0 0 1 5 5v25a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="url(#g-orange)"/>
+  <rect x="14" y="20" width="36" height="20" rx="3" fill="#fff" opacity=".92"/>
+  <path d="M6 30h52v19a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="url(#g-yellow)"/>
+  ${gloss('M8 32h48v6H8z', .55)}`);
+
+A.doc = svg(`${shadow()}
+  <path d="M14 8h24l13 13v35a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V13a5 5 0 0 1 5-5z" fill="#fff"/>
+  <path d="M14 8h24l13 13v35a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V13a5 5 0 0 1 5-5z" fill="url(#g-gray)"/>
+  <path d="M38 8l13 13H41a3 3 0 0 1-3-3z" fill="#B8BFCB"/>
+  <path d="M17 28h22M17 35h22M17 42h14" stroke="#1F68EB" stroke-width="2.6" stroke-linecap="round"/>`);
+
+A.clip = svg(`${shadow(32, 57, 12, 4)}
+  <path d="M44 16 22 38a7 7 0 0 0 10 10l22-22a13 13 0 0 0-18-18L12 32a19 19 0 0 0 27 27l17-17"
+        stroke="url(#g-blue)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+  <path d="M44 16 22 38a7 7 0 0 0 3 11" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>`);
+
+A.link = svg(`${shadow(32, 57, 12, 4)}
+  <path d="M26 38 38 26" stroke="#0C3C9E" stroke-width="6" stroke-linecap="round"/>
+  <path d="M28 20 36 12a11 11 0 0 1 16 16l-8 8" stroke="url(#g-blue)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M36 44l-8 8a11 11 0 0 1-16-16l8-8" stroke="url(#g-blue)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M30 18l6-6a11 11 0 0 1 10-3" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".55"/>`);
+
+A.receipt = svg(`${shadow()}
+  <path d="M12 6h40v48l-5-4-5 4-5-4-5 4-5-4-5 4-5-4-5 4z" fill="#fff"/>
+  <path d="M12 6h40v48l-5-4-5 4-5-4-5 4-5-4-5 4-5-4-5 4z" fill="url(#g-gray)"/>
+  <path d="M19 18h26M19 26h26M19 34h16" stroke="#8A93A3" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="43" cy="38" r="7" fill="url(#g-green)"/>
+  <path d="m40 38 2.4 2.4L47 36" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+
+A.tag = svg(`${shadow()}
+  <path d="M32 6h20a6 6 0 0 1 6 6v20a6 6 0 0 1-1.8 4.2L36.2 56.2a6 6 0 0 1-8.5 0L7.8 36.3a6 6 0 0 1 0-8.5L27.8 7.8A6 6 0 0 1 32 6z" fill="url(#g-pink)"/>
+  <path d="M32 6h20a6 6 0 0 1 6 6v20z" fill="#fff" opacity=".25"/>
+  <circle cx="46" cy="18" r="5.5" fill="#fff"/>
+  <circle cx="46" cy="18" r="2.4" fill="#EE4E8B"/>`);
+
+// ── Защита и доверие ──────────────────────────────────────────────────────
+A.shield = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M32 6 54 14v18c0 13-9 21-22 26-13-5-22-13-22-26V14z" fill="url(#g-blueDeep)"/>
+  <path d="M32 6 54 14v18c0 13-9 21-22 26z" fill="#0A3486"/>
+  <path d="M32 6 10 14v18c0 13 9 21 22 26z" fill="url(#g-blue)"/>
+  <path d="m23 32 6.5 6.5L43 25" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+
+A.lock = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M20 28v-6a12 12 0 0 1 24 0v6h-6v-6a6 6 0 0 0-12 0v6z" fill="url(#g-steel)"/>
+  <rect x="12" y="27" width="40" height="29" rx="7" fill="url(#g-redDeep)"/>
+  <rect x="12" y="27" width="40" height="11" rx="7" fill="url(#g-red)"/>
+  <circle cx="32" cy="40" r="5" fill="#7E140D"/>
+  <rect x="30" y="42" width="4" height="8" rx="2" fill="#7E140D"/>`);
+
+A.bell = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M32 8a4 4 0 0 1 4 4v2c8 2 12 8 12 16 0 8 2 12 5 15H11c3-3 5-7 5-15 0-8 4-14 12-16v-2a4 4 0 0 1 4-4z" fill="url(#g-yellow)"/>
+  <path d="M32 8a4 4 0 0 1 4 4v2c8 2 12 8 12 16 0 8 2 12 5 15H32z" fill="#E0A20F"/>
+  <path d="M26 51h12a6 6 0 0 1-12 0z" fill="#C98A0B"/>
+  ${gloss('M22 20c2-3 5-5 8-5-4 4-6 10-6 18h-5c0-6 1-10 3-13z', .8)}`);
+
+// ── Быт и покупки ─────────────────────────────────────────────────────────
+A.home = svg(`${shadow()}
+  <path d="M32 8 58 30l-4 5-22-19-22 19-4-5z" fill="url(#g-redDeep)"/>
+  <path d="M13 30 32 13l19 17v22a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4z" fill="url(#g-orange)"/>
+  <rect x="26" y="38" width="12" height="18" rx="2" fill="#9C5F28"/>
+  <rect x="17" y="34" width="7" height="7" rx="1.6" fill="#9BF3E8"/>
+  <rect x="40" y="34" width="7" height="7" rx="1.6" fill="#9BF3E8"/>
+  ${gloss('M15 31 32 16v6L19 34z', .6)}`);
+
+A.cart = svg(`${shadow()}
+  <path d="M6 12h7l3 6h39l-6 22H21L14 18" stroke="url(#g-blue)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M18 22h34l-4.6 16H22z" fill="url(#g-cyan)"/>
+  <circle cx="24" cy="50" r="5.5" fill="url(#g-blueDeep)"/>
+  <circle cx="44" cy="50" r="5.5" fill="url(#g-blueDeep)"/>
+  <circle cx="24" cy="50" r="2" fill="#fff" opacity=".6"/>
+  <circle cx="44" cy="50" r="2" fill="#fff" opacity=".6"/>`);
+
+A.coffee = svg(`${shadow()}
+  <path d="M12 20h34v18a15 15 0 0 1-30 0z" fill="url(#g-gray)"/>
+  <path d="M46 24h5a8 8 0 0 1 0 16h-5z" fill="none" stroke="#B8BFCB" stroke-width="4"/>
+  <path d="M15 24h28v14a12 12 0 0 1-24 0z" fill="url(#g-brown)"/>
+  <ellipse cx="29" cy="25" rx="14" ry="3.4" fill="#7A4517"/>
+  <rect x="10" y="50" width="38" height="5" rx="2.5" fill="url(#g-steel)"/>
+  <path d="M22 8c0 4-3 4-3 8M31 6c0 4-3 4-3 8" stroke="#C9CFDA" stroke-width="2.6" stroke-linecap="round" fill="none"/>`);
+
+A.car = svg(`${shadow()}
+  <path d="M10 40 15 25a6 6 0 0 1 6-4h22a6 6 0 0 1 6 4l5 15z" fill="url(#g-yellow)"/>
+  <rect x="6" y="38" width="52" height="12" rx="5" fill="url(#g-orange)"/>
+  <path d="M19 26h26l3 10H16z" fill="#9BF3E8"/>
+  <path d="M32 26v10" stroke="#F5820B" stroke-width="2"/>
+  <circle cx="18" cy="50" r="6" fill="url(#g-dark)"/>
+  <circle cx="46" cy="50" r="6" fill="url(#g-dark)"/>
+  <circle cx="18" cy="50" r="2.2" fill="#C9CFDA"/>
+  <circle cx="46" cy="50" r="2.2" fill="#C9CFDA"/>`);
+
+A.tv = svg(`${shadow()}
+  <rect x="6" y="12" width="52" height="34" rx="5" fill="url(#g-dark)"/>
+  <rect x="10" y="16" width="44" height="26" rx="3" fill="url(#g-blueDeep)"/>
+  <path d="M10 16h44v13H10z" fill="#fff" opacity=".14"/>
+  <path d="m28 23 11 6-11 6z" fill="#fff" opacity=".92"/>
+  <rect x="24" y="48" width="16" height="4" rx="2" fill="#8A93A3"/>
+  <rect x="16" y="52" width="32" height="4" rx="2" fill="url(#g-steel)"/>`);
+
+A.edu = svg(`${shadow()}
+  <path d="M32 12 60 24 32 36 4 24z" fill="url(#g-blueDeep)"/>
+  <path d="M32 12 60 24 32 36z" fill="#0A3486"/>
+  <path d="M16 30v12c0 5 7 9 16 9s16-4 16-9V30l-16 7z" fill="url(#g-blue)"/>
+  <path d="M56 26v13" stroke="#FFD84D" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="56" cy="42" r="3.4" fill="#FFD84D"/>`);
+
+A.parking = svg(`${shadow()}
+  <rect x="8" y="8" width="48" height="48" rx="12" fill="url(#g-blueDeep)"/>
+  <rect x="8" y="8" width="48" height="24" rx="12" fill="url(#g-blue)"/>
+  <path d="M24 46V18h11a9 9 0 0 1 0 18h-5" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+
+A.burger = svg(`${shadow()}
+  <path d="M8 26c0-9 11-15 24-15s24 6 24 15z" fill="url(#g-brown)"/>
+  <path d="M8 26h48v4H8z" fill="#7BE87B"/>
+  <path d="M8 30h48v6H8z" fill="#EF3124"/>
+  <path d="M8 36h48v4H8z" fill="#FFD84D"/>
+  <path d="M8 40h48v4c0 5-8 9-24 9S8 49 8 44z" fill="#C98A0B"/>
+  <circle cx="22" cy="18" r="1.6" fill="#FFF3D6"/><circle cx="32" cy="15" r="1.6" fill="#FFF3D6"/>
+  <circle cx="42" cy="18" r="1.6" fill="#FFF3D6"/>`);
+
+A.bag = svg(`${shadow()}
+  <path d="M14 20h36l4 32a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="url(#g-purple)"/>
+  <path d="M14 20h36l1.5 12h-39z" fill="#fff" opacity=".22"/>
+  <path d="M23 24v-6a9 9 0 0 1 18 0v6" stroke="#4B21C4" stroke-width="3.4" fill="none" stroke-linecap="round"/>`);
+
+A.store = svg(`${shadow()}
+  <path d="M8 16h48l4 12a8 8 0 0 1-16 0 8 8 0 0 1-16 0 8 8 0 0 1-16 0z" fill="url(#g-red)"/>
+  <rect x="10" y="30" width="44" height="24" rx="3" fill="url(#g-gray)"/>
+  <rect x="18" y="36" width="14" height="18" rx="2" fill="url(#g-redDeep)"/>
+  <rect x="38" y="36" width="12" height="10" rx="2" fill="#9BF3E8"/>`);
+
+A.suitcase = svg(`${shadow()}
+  <path d="M24 18v-4a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v4h-5v-3h-6v3z" fill="#8A93A3"/>
+  <rect x="8" y="18" width="48" height="32" rx="6" fill="url(#g-cyan)"/>
+  <rect x="8" y="18" width="48" height="12" rx="6" fill="#fff" opacity=".3"/>
+  <rect x="27" y="18" width="10" height="32" fill="#0B7F73" opacity=".35"/>
+  <rect x="14" y="50" width="6" height="6" rx="2" fill="#5E6675"/>
+  <rect x="44" y="50" width="6" height="6" rx="2" fill="#5E6675"/>`);
+
+A.taxi = svg(`${shadow()}
+  <rect x="24" y="6" width="16" height="8" rx="2.5" fill="url(#g-dark)"/>
+  <path d="M10 40 15 25a6 6 0 0 1 6-4h22a6 6 0 0 1 6 4l5 15z" fill="#FFD84D"/>
+  <rect x="6" y="38" width="52" height="12" rx="5" fill="url(#g-yellow)"/>
+  <path d="M19 26h26l3 10H16z" fill="#B8E4FF"/>
+  <path d="M6 44h52" stroke="#1B1B1B" stroke-width="3" stroke-dasharray="5 4"/>
+  <circle cx="18" cy="50" r="6" fill="url(#g-dark)"/>
+  <circle cx="46" cy="50" r="6" fill="url(#g-dark)"/>`);
+
+// ── Развлечения и прочее ──────────────────────────────────────────────────
+A.movie = svg(`${shadow()}
+  <rect x="6" y="24" width="52" height="28" rx="5" fill="url(#g-dark)"/>
+  <path d="m8 12 46 6-2 8-46-6z" fill="#3A3E48"/>
+  <path d="m14 13 8 1-3 8-8-1zM28 15l8 1-3 8-8-1zM42 17l8 1-3 8-8-1z" fill="#fff" opacity=".9"/>
+  <rect x="12" y="30" width="16" height="16" rx="2" fill="url(#g-red)"/>
+  <rect x="32" y="30" width="20" height="6" rx="2" fill="#5E6675"/>
+  <rect x="32" y="40" width="14" height="6" rx="2" fill="#5E6675"/>`);
+
+A.wheel = svg(`${shadow(32, 57, 15, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-gray)"/>
+  <path d="M32 30V6a24 24 0 0 1 20.8 12z" fill="url(#g-purple)"/>
+  <path d="M32 30h20.8A24 24 0 0 1 32 54z" fill="url(#g-lime)"/>
+  <path d="M32 30v24A24 24 0 0 1 11.2 18z" fill="url(#g-orange)"/>
+  <path d="M32 30 11.2 18A24 24 0 0 1 32 6z" fill="url(#g-cyan)"/>
+  <circle cx="32" cy="30" r="6" fill="url(#g-steel)"/>
+  <path d="m50 24 10-3-6 9z" fill="#EF3124"/>`);
+
+A.crystal = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M32 6 54 24 32 56 10 24z" fill="url(#g-cyan)"/>
+  <path d="M32 6 54 24 32 56z" fill="#0B7F73" opacity=".45"/>
+  <path d="M10 24h44M32 6v50M20 15l12 9 12-9" stroke="#fff" stroke-width="1.8" opacity=".55" fill="none"/>
+  ${gloss('M32 8 20 20l12 6z', .8)}`);
+
+A.bolt = svg(`${shadow(32, 57, 12, 4)}
+  <path d="M36 4 14 34h13l-5 26 24-32H32z" fill="url(#g-yellow)"/>
+  <path d="M36 4 14 34h13z" fill="#fff" opacity=".35"/>
+  <path d="M36 4 14 34h13l-5 26 24-32H32z" fill="none" stroke="#E0A20F" stroke-width="1.6" stroke-linejoin="round"/>`);
+
+A.smile = svg(`${shadow(32, 57, 14, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-yellow)"/>
+  <circle cx="32" cy="30" r="24" fill="url(#g-glossR)"/>
+  <circle cx="24" cy="25" r="3.2" fill="#8A5A05"/>
+  <circle cx="40" cy="25" r="3.2" fill="#8A5A05"/>
+  <path d="M22 36c3 5 7 7 10 7s7-2 10-7" stroke="#8A5A05" stroke-width="3.4" fill="none" stroke-linecap="round"/>`);
+
+A.star = svg(`${shadow(32, 57, 14, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-yellow)"/>
+  <circle cx="32" cy="30" r="24" fill="url(#g-glossR)"/>
+  <path d="m32 14 5.2 10.6 11.6 1.7-8.4 8.2 2 11.5L32 40.6 21.6 46l2-11.5-8.4-8.2 11.6-1.7z" fill="#EF3124"/>`);
+
+// Лучи звезды посчитаны по окружностям R=25,5 / r=20,5 — на глаз такая
+// фигура выходит несимметричной.
+A.new = svg(`${shadow(32, 57, 14, 4)}
+  <path d="M32.0 4.5 L26.7 10.2 L19.3 7.9 L17.5 15.5 L9.9 17.2 L12.2 24.7 L6.5 30.0 L12.2 35.3 L9.9 42.7 L17.5 44.5 L19.3 52.1 L26.7 49.8 L32.0 55.5 L37.3 49.8 L44.7 52.1 L46.5 44.5 L54.1 42.8 L51.8 35.3 L57.5 30.0 L51.8 24.7 L54.1 17.2 L46.5 15.5 L44.8 7.9 L37.3 10.2 Z"
+        fill="url(#g-redDeep)"/>
+  <circle cx="32" cy="30" r="19" fill="url(#g-red)"/>
+  <circle cx="32" cy="30" r="19" fill="url(#g-glossR)"/>
+  <text x="32" y="35" text-anchor="middle" font-family="Inter,Arial,sans-serif"
+        font-size="13" font-weight="800" fill="#fff" letter-spacing="-.3">NEW</text>`);
+
+A.heartYellow = svg(`${shadow(32, 57, 14, 4)}
+  <path d="M32 55C15 43 7 35 7 25A13 13 0 0 1 32 19 13 13 0 0 1 57 25c0 10-8 18-25 30z" fill="url(#g-yellow)"/>
+  <path d="M32 55c17-12 25-20 25-30a13 13 0 0 0-14-13c6 3 8 8 8 14 0 9-7 17-19 29z" fill="#E0A20F"/>
+  ${gloss('M20 16c5-2 10 0 12 4-4-1-9 0-12 4-3-3-3-6 0-8z', .85)}`);
+
+A.thumb = svg(`${shadow(32, 57, 12, 4)}
+  <path d="M20 26h8V14a6 6 0 0 1 12 0c0 4-2 8-3 12h12a6 6 0 0 1 6 7l-3 15a7 7 0 0 1-7 6H20z" fill="url(#g-green)"/>
+  <rect x="8" y="26" width="12" height="30" rx="4" fill="url(#g-cyan)"/>
+  ${gloss('M10 28h8v8h-8z', .55)}`);
+
+// ── Работа и найм ─────────────────────────────────────────────────────────
+A.camera = svg(`${shadow()}
+  <rect x="6" y="18" width="36" height="28" rx="6" fill="url(#g-dark)"/>
+  <path d="m44 30 12-8v24l-12-8z" fill="url(#g-steel)"/>
+  <circle cx="24" cy="32" r="9" fill="url(#g-redDeep)"/>
+  <circle cx="24" cy="32" r="4" fill="#fff" opacity=".85"/>
+  <rect x="10" y="22" width="10" height="4" rx="2" fill="#fff" opacity=".3"/>`);
+
+A.clapper = svg(`${shadow()}
+  <rect x="6" y="26" width="52" height="26" rx="5" fill="url(#g-dark)"/>
+  <path d="M8 12h48a4 4 0 0 1 4 4v8H4v-8a4 4 0 0 1 4-4z" fill="#3A3E48"/>
+  <path d="m14 12-6 12h9l6-12zm16 0-6 12h9l6-12zm16 0-6 12h9l6-12z" fill="#fff" opacity=".9"/>
+  <circle cx="32" cy="39" r="8" fill="url(#g-redDeep)"/>
+  <path d="m29 35 7 4-7 4z" fill="#fff"/>`);
+
+A.clock = svg(`${shadow(32, 57, 14, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-steel)"/>
+  <circle cx="32" cy="30" r="19" fill="#fff"/>
+  <circle cx="32" cy="30" r="19" fill="url(#g-glossR)"/>
+  <path d="M32 18v12l8 5" stroke="#EF3124" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="30" r="2.4" fill="#EF3124"/>`);
+
+A.search = svg(`${shadow(30, 57, 13, 4)}
+  <circle cx="28" cy="26" r="17" fill="url(#g-blue)" opacity=".25"/>
+  <circle cx="28" cy="26" r="17" fill="none" stroke="url(#g-blue)" stroke-width="6"/>
+  <path d="m40 38 12 12" stroke="url(#g-blueDeep)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M20 18a11 11 0 0 1 9-4" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>`);
+
+A.gear = svg(`${shadow(32, 57, 13, 4)}
+  <path d="M27 6h10l1.4 6.6 4.6 2.6 6.3-2.4 5 8.6-4.9 4.5v5.4l4.9 4.5-5 8.6-6.3-2.4-4.6 2.6L37 51H27l-1.4-6.6-4.6-2.6-6.3 2.4-5-8.6 4.9-4.5v-5.4l-4.9-4.5 5-8.6 6.3 2.4 4.6-2.6z" fill="url(#g-steel)"/>
+  <circle cx="32" cy="28.5" r="9" fill="url(#g-dark)"/>
+  <circle cx="32" cy="28.5" r="4.5" fill="#C9CFDA"/>`);
+
+A.wifi = svg(`${shadow(32, 54, 12, 4)}
+  <path d="M6 22a37 37 0 0 1 52 0" stroke="url(#g-blue)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M15 32a24 24 0 0 1 34 0" stroke="url(#g-blue)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M24 42a11 11 0 0 1 16 0" stroke="url(#g-blue)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".6"/>
+  <circle cx="32" cy="51" r="4.5" fill="url(#g-blueDeep)"/>`);
+
+A.phone = svg(`${shadow(32, 57, 12, 4)}
+  <rect x="17" y="4" width="30" height="52" rx="7" fill="url(#g-dark)"/>
+  <rect x="20" y="10" width="24" height="38" rx="3" fill="url(#g-blue)"/>
+  <rect x="20" y="10" width="24" height="18" rx="3" fill="#fff" opacity=".18"/>
+  <rect x="28" y="6.5" width="8" height="2" rx="1" fill="#7A8091"/>
+  <circle cx="32" cy="52" r="2.6" fill="#7A8091"/>`);
+
+A.phoneOut = svg(`${shadow(30, 57, 12, 4)}
+  <rect x="8" y="6" width="26" height="48" rx="6" fill="url(#g-dark)"/>
+  <rect x="11" y="12" width="20" height="34" rx="2.5" fill="url(#g-green)"/>
+  <path d="M40 30h14M48 24l6 6-6 6" stroke="url(#g-green)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+
+A.chatBubble = svg(`${shadow(30, 57, 15, 4)}
+  <path d="M10 10h44a6 6 0 0 1 6 6v22a6 6 0 0 1-6 6H26L12 55V44h-2a6 6 0 0 1-6-6V16a6 6 0 0 1 6-6z" fill="url(#g-redDeep)"/>
+  <path d="M10 10h44a6 6 0 0 1 6 6v6H4v-6a6 6 0 0 1 6-6z" fill="url(#g-red)"/>
+  <path d="M16 26h32M16 34h20" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".92"/>`);
+
+A.folderTabs = svg(`${shadow()}
+  <path d="M6 20a5 5 0 0 1 5-5h12l4 5h16a5 5 0 0 1 5 5v4H6z" fill="url(#g-steel)"/>
+  <rect x="14" y="22" width="44" height="30" rx="5" fill="url(#g-blue)"/>
+  <rect x="10" y="26" width="44" height="28" rx="5" fill="url(#g-cyan)"/>
+  <rect x="6" y="30" width="44" height="26" rx="5" fill="url(#g-gray)"/>
+  <path d="M13 38h22M13 45h14" stroke="#8A93A3" stroke-width="2.6" stroke-linecap="round"/>`);
+
+A.sparkle = svg(`${shadow(32, 57, 13, 4)}
+  <circle cx="32" cy="30" r="24" fill="url(#g-purple)"/>
+  <circle cx="32" cy="30" r="24" fill="url(#g-glossR)"/>
+  <path d="m32 12 4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#fff"/>
+  <path d="m48 14 1.6 4.4L54 20l-4.4 1.6L48 26l-1.6-4.4L42 20l4.4-1.6z" fill="#FFD84D"/>`);
+
+A.heartGreen = svg(`${shadow(32, 57, 14, 4)}
+  <path d="M32 55C15 43 7 35 7 25A13 13 0 0 1 32 19 13 13 0 0 1 57 25c0 10-8 18-25 30z" fill="url(#g-green)"/>
+  <path d="M32 55c17-12 25-20 25-30a13 13 0 0 0-14-13c6 3 8 8 8 14 0 9-7 17-19 29z" fill="#0B6E3F"/>
+  ${gloss('M20 16c5-2 10 0 12 4-4-1-9 0-12 4-3-3-3-6 0-8z', .85)}`);
+
+/** Облачко на мини-карте — рисуется в один цвет, без объёма. */
+A.cloud = svg(`<path d="M18 42a10 10 0 0 1 1.4-19.9A15 15 0 0 1 47 26a9 9 0 0 1-1 16z"
+  fill="currentColor"/>`);
+
+/** Крупная цифра со скосом — для акционных плиток вроде «30». */
+export const bigNumber = (text, grad = 'redDeep') => `<svg class="art" viewBox="0 0 64 64">
+  ${shadow(32, 57, 20, 4)}
+  <text x="33" y="45" text-anchor="middle" font-family="Inter,Arial,sans-serif"
+        font-size="32" font-weight="800" fill="#8E1710" letter-spacing="-1.5">${text}</text>
+  <text x="31" y="43" text-anchor="middle" font-family="Inter,Arial,sans-serif"
+        font-size="32" font-weight="800" fill="url(#g-${grad})" letter-spacing="-1.5">${text}</text>
+</svg>`;
+
+/** Маленькая звезда для строки рейтинга — ровно по базовой линии текста. */
+export const starMark = `<svg class="art art--inline" viewBox="0 0 24 24">
+  <path d="m12 3 2.6 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.7 19.7l1.1-6.1-4.5-4.2 6.1-.8z" fill="#F5B31E"/>
+</svg>`;
+
+// ── Экспорт ───────────────────────────────────────────────────────────────
+export const art = A;
+
+/** Иллюстрация по имени; если такой нет — прозрачная заглушка нужного размера. */
+export const pic = (name) => A[name] || svg('');
