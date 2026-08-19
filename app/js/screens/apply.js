@@ -394,7 +394,7 @@ ${statusBar()}
 <div class="navbar"><button class="navbar__btn" data-go="back">${ico.chevL}</button><div class="navbar__title">Тест</div></div>
 <div class="vcv-progress">
   ${Array.from({ length: total + 3 }, (_, k) =>
-    `<div class="vcv-progress__seg ${k < i ? 'is-done' : k === i ? 'is-now' : ''}"></div>`).join('')}
+    `<div class="vcv-progress__seg ${k <= i ? 'is-done' : ''}"></div>`).join('')}
 </div>
 <div class="scroll">
   <div class="q-num">Вопрос ${i + 1} из ${total}</div>
@@ -452,7 +452,7 @@ ${statusBar()}
 <div class="vcv-progress">
   ${Array.from({ length: testTotal + 3 }, (_, k) => {
     const pos = testTotal + i;
-    return `<div class="vcv-progress__seg ${k < pos ? 'is-done' : k === pos ? 'is-now' : ''}"></div>`;
+    return `<div class="vcv-progress__seg ${k <= pos ? 'is-done' : ''}"></div>`;
   }).join('')}
 </div>
 <div class="scroll">

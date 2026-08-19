@@ -205,10 +205,14 @@
 .stub-box__text { font-size: 14px; color: var(--ink-2); line-height: 1.4; }
 
 /* ── VCV-скрининг ───────────────────────────────────────────────────────── */
+/* Отрезок либо пройден целиком, либо нет: граница прогресса всегда попадает
+   в пробел между отрезками, а не застывает на середине одного из них. */
 .vcv-progress { display: flex; gap: 5px; padding: 0 var(--pad) 16px; }
-.vcv-progress__seg { flex: 1 1 0; height: 4px; border-radius: 3px; background: #E3E5E8; overflow: hidden; }
+.vcv-progress__seg {
+  flex: 1 1 0; height: 4px; border-radius: 3px; background: #E3E5E8;
+  transition: background .25s ease;
+}
 .vcv-progress__seg.is-done { background: var(--red); }
-.vcv-progress__seg.is-now::after { content: ""; display: block; height: 100%; width: 45%; background: var(--red); }
 
 .vcv-hero { padding: 8px var(--pad) 0; text-align: center; }
 .vcv-hero__emoji { font-size: 64px; }

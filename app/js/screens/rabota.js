@@ -89,7 +89,7 @@ ${statusBar()}
 
 <div class="duo-nav">
   <button class="duo-nav__card pressable" data-go="responses">
-    <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartYellow}</span>
+    <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartRed}</span>
     ${s.responses.length ? `<span class="duo-nav__count">${s.responses.length}</span>` : ''}
   </button>
   <button class="duo-nav__card pressable" data-go="resumes">

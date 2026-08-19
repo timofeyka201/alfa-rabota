@@ -254,11 +254,15 @@ A.arrows = svg(`${shadow(32, 57, 15, 4)}
   <path d="M44 38H26l5 5-3 3-10-10 10-10 3 3-5 5h18z" fill="#2F6B08" opacity=".55"/>`);
 
 // ── Документы и файлы ─────────────────────────────────────────────────────
+// Папка фирменная красная, а не жёлтая: жёлтый — цвет чужого банка.
 A.folder = svg(`${shadow()}
-  <path d="M6 18a5 5 0 0 1 5-5h13l5 6h19a5 5 0 0 1 5 5v25a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="url(#g-orange)"/>
-  <rect x="14" y="20" width="36" height="20" rx="3" fill="#fff" opacity=".92"/>
-  <path d="M6 30h52v19a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="url(#g-yellow)"/>
-  ${gloss('M8 32h48v6H8z', .55)}`);
+  <path d="M6 18a5 5 0 0 1 5-5h13l5 6h19a5 5 0 0 1 5 5v25a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="#B01A10"/>
+  <rect x="14" y="19" width="36" height="21" rx="3" fill="#DCEDFF"/>
+  <rect x="18" y="24" width="24" height="2.6" rx="1.3" fill="#8FB4E8"/>
+  <rect x="18" y="30" width="18" height="2.6" rx="1.3" fill="#8FB4E8"/>
+  <path d="M6 29h52v20a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5z" fill="url(#g-redDeep)"/>
+  <path d="M6 29h52v9H6z" fill="url(#g-red)"/>
+  ${gloss('M9 31h46v6H9z', .5)}`);
 
 A.doc = svg(`${shadow()}
   <path d="M14 8h24l13 13v35a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V13a5 5 0 0 1 5-5z" fill="#fff"/>
@@ -453,9 +457,10 @@ A.new = svg(`${shadow(32, 57, 14, 4)}
   <text x="32" y="35" text-anchor="middle" font-family="Inter,Arial,sans-serif"
         font-size="13" font-weight="800" fill="#fff" letter-spacing="-.3">NEW</text>`);
 
-A.heartYellow = svg(`${shadow(32, 57, 14, 4)}
-  <path d="M32 55C15 43 7 35 7 25A13 13 0 0 1 32 19 13 13 0 0 1 57 25c0 10-8 18-25 30z" fill="url(#g-yellow)"/>
-  <path d="M32 55c17-12 25-20 25-30a13 13 0 0 0-14-13c6 3 8 8 8 14 0 9-7 17-19 29z" fill="#E0A20F"/>
+// Сердце откликов — фирменное красное. Жёлтое сердце читалось бы как чужой бренд.
+A.heartRed = svg(`${shadow(32, 57, 14, 4)}
+  <path d="M32 55C15 43 7 35 7 25A13 13 0 0 1 32 19 13 13 0 0 1 57 25c0 10-8 18-25 30z" fill="url(#g-red)"/>
+  <path d="M32 55c17-12 25-20 25-30a13 13 0 0 0-14-13c6 3 8 8 8 14 0 9-7 17-19 29z" fill="#A5170E"/>
   ${gloss('M20 16c5-2 10 0 12 4-4-1-9 0-12 4-3-3-3-6 0-8z', .85)}`);
 
 A.thumb = svg(`${shadow(32, 57, 12, 4)}
