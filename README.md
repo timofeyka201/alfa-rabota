@@ -85,8 +85,10 @@ npx serve app
 Открыть `http://localhost:3000`.
 
 ### Деплой на Vercel
-Импортировать репозиторий → Framework Preset: **Other** → Root Directory: **`app`** → Deploy.
-Настройки уже лежат в `vercel.json`, менять ничего не нужно.
+Импортировать репозиторий → Framework Preset: **Other** → Deploy.
+
+Root Directory менять **не нужно**: `vercel.json` в корне уже указывает отдавать
+папку `app`, сборка не требуется.
 
 ---
 
