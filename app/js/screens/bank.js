@@ -124,10 +124,10 @@ ${compactHead()}
   <div class="acct">
     <div>
       <div class="acct__label">Текущий счёт</div>
-      <div class="acct__sum">59 179,05 ₽</div>
+      <div class="acct__sum">214 380,50 ₽</div>
     </div>
     <div class="acct__spacer"></div>
-    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__num">1033</span><span class="mini-card__ps">МИР</span></div>
+    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__num">7712</span><span class="mini-card__ps">МИР</span></div>
   </div>
 
   <div class="acct">
@@ -136,7 +136,7 @@ ${compactHead()}
       <div class="acct__sum">0 BYN</div>
     </div>
     <div class="acct__spacer"></div>
-    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__cloud">☁️</span><span class="mini-card__num">4753</span><span class="mini-card__ps">МИР</span></div>
+    <div class="mini-card"><span class="mini-card__a">А</span><span class="mini-card__cloud">☁️</span><span class="mini-card__num">3908</span><span class="mini-card__ps">МИР</span></div>
   </div>
 
   <div class="promo-acct">
@@ -507,7 +507,7 @@ function chats() {
     }).join('');
 
   const stock = [
-    ['🔔', 'Уведомления', '15:08', 'Списание со счёта 4*9178; Перевод на сумму 900,00 RUB;…', '', '#FFF6E0'],
+    ['🔔', 'Уведомления', '15:08', 'Списание со счёта 4*7712; Перевод на сумму 900,00 RUB;…', '', '#FFF6E0'],
     ['💬', 'Чат с банком', '14 мая', 'Комиссия за переводы через СБП:…', '', '#EF3124'],
     ['🗂', 'Обращения в банк', '', 'Здесь можно подать обращение и посмотреть уже созданные', '', '#E4F0FF'],
     ['🤩', 'Альфа-Выгодно', '10:41', 'Оплату за отель теперь можно ПОДЕЛИТЬ. Без коми…', '99+', '#F3E8FF'],

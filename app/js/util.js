@@ -86,10 +86,10 @@ export function initials(name) {
 // ── Иконки ────────────────────────────────────────────────────────────────
 export const ico = {
   person: '<svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4 0-8 2-8 4.6V21h16v-2.4c0-2.6-4-4.6-8-4.6Z"/></svg>',
-  chevR: '<svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  chevL: '<svg viewBox="0 0 24 24" fill="none"><path d="m15 5-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  chevD: '<svg viewBox="0 0 24 24" fill="none"><path d="m5 9 7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  close: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>',
+  chevR: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  chevL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 5-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  chevD: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 9 7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>',
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="#1B1B1B" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>',
   qr: '<svg viewBox="0 0 24 24" fill="#1B1B1B"><path d="M3 3h7v2H5v3H3V3Zm11 0h7v5h-2V5h-5V3ZM3 16h2v3h5v2H3v-5Zm16 0h2v5h-7v-2h5v-3Z"/><rect x="7" y="7" width="4" height="4" rx="1"/><rect x="13" y="7" width="4" height="4" rx="1"/><rect x="7" y="13" width="4" height="4" rx="1"/><rect x="13" y="13" width="2" height="2" rx=".5"/><rect x="16" y="16" width="1.6" height="1.6" rx=".4"/></svg>',
   nfc: '<svg viewBox="0 0 24 24" fill="none" stroke="#1B1B1B" stroke-width="2" stroke-linecap="round"><path d="M7 8a6 6 0 0 1 0 8M11 5.5a10 10 0 0 1 0 13M15 3a14 14 0 0 1 0 18"/></svg>',

@@ -8,6 +8,17 @@
 }
 .view--white { background: #fff; }
 
+/* Внутри колонки экрана сжиматься имеет право только прокручиваемая область.
+   Без этого шапки, сегменты и строки фильтров схлопываются по высоте. */
+.view > * { flex: 0 0 auto; }
+.view > .scroll,
+.view > .chat-body { flex: 1 1 auto; min-height: 0; }
+
+/* Инлайновый SVG без размеров браузер рисует 300×150 и разрывает вёрстку.
+   Задаём умолчание — более конкретные правила ниже его перекрывают. */
+.view svg { width: 20px; height: 20px; flex: 0 0 auto; }
+.statusbar svg { width: 17px; height: 13px; }
+
 .view.anim-in  { animation: slideIn .28s cubic-bezier(.2,.85,.25,1); }
 @keyframes slideIn { from { transform: translateX(34px); opacity: 0 } to { transform: none; opacity: 1 } }
 
@@ -142,9 +153,15 @@
 .story {
   flex: 0 0 auto; width: 168px; border-radius: var(--r-card); overflow: hidden;
   background: var(--blue-strip); cursor: pointer;
+  display: flex; flex-direction: column;
 }
-.story__art { height: 116px; display: grid; place-items: center; font-size: 54px; }
-.story__cap { padding: 12px 14px 16px; font-size: 16px; font-weight: 600; line-height: 1.25; }
+.story__art { height: 116px; flex: 0 0 auto; display: grid; place-items: center; font-size: 54px; }
+/* Белая подпись растягивается до низа карточки: карточки в ленте выравниваются
+   по самой высокой, иначе снизу проглядывает цветная подложка. */
+.story__cap {
+  flex: 1 1 auto; padding: 12px 14px 16px;
+  font-size: 16px; font-weight: 600; line-height: 1.25;
+}
 
 .tile {
   flex: 0 0 auto; width: 168px; min-height: 168px; border-radius: var(--r-card);
@@ -261,6 +278,7 @@
 .balance-card { margin: 0 var(--pad); border-radius: var(--r-card); overflow: hidden; background: var(--surface-2); }
 .balance-card__top { padding: 18px; }
 .balance-card__label { font-size: 15px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.balance-card__label svg { width: 16px; height: 16px; }
 .balance-card__val { font-size: 26px; font-weight: 700; margin-top: 4px; letter-spacing: -.02em; }
 .balance-card__strip {
   background: var(--blue-strip); padding: 15px 18px; font-size: 15px;
@@ -270,6 +288,9 @@
   margin: 10px var(--pad) 0; background: var(--surface-2); border-radius: var(--r-card);
   padding: 16px; display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 1.35; cursor: pointer;
 }
+/* Шевроны-указатели на светлом фоне: цвет наследуется через currentColor */
+.info-card svg,
+.balance-card__strip svg { color: var(--ink-3); }
 .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px var(--pad) 0; }
 .duo__card {
   border-radius: var(--r-card); padding: 16px; min-height: 156px; cursor: pointer;
