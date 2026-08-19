@@ -196,7 +196,12 @@ ${homeIndicator()}`;
             const ids = new Set(live.map((v) => v.id));
             partnerFeed = [...live, ...partnerFeed.filter((v) => !ids.has(v.id))];
             feedState = 'live';
-            if (nav.current() === 'rabota') draw();
+            if (nav.current() === 'rabota') {
+              // За время запроса экран могли перерисовать (например, переключили
+              // вкладку) — тогда этот draw() писал бы в открепившийся от DOM узел.
+              if (feed.isConnected) draw();
+              else nav.refresh();
+            }
           }
         } else {
           draw();
