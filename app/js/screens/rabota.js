@@ -6,7 +6,7 @@ import { art, starMark } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 import {
-  ALFA_JOBS, PARTNER_JOBS, loadSnapshot, loadLive,
+  alfaJobs, loadAlfaJobs, PARTNER_JOBS, loadSnapshot, loadLive,
   FILTER_DEFS, emptyFilters, countActive, applyFilters, FORMAT_LABEL, companyProfile,
 } from '../data.js';
 
@@ -16,11 +16,11 @@ let feedState = 'idle'; // idle | loading | snapshot | live
 let uiState = { tab: 'all', query: '' };
 
 /** Все вакансии сервиса: сначала Альфа-Банк, затем Alfa Group, затем API. */
-export const allJobs = () => [...ALFA_JOBS, ...PARTNER_JOBS, ...(partnerFeed || [])];
+export const allJobs = () => [...alfaJobs(), ...PARTNER_JOBS, ...(partnerFeed || [])];
 
 /** Лента под выбранную вкладку. */
 const baseFor = (tab) =>
-  tab === 'alfa' ? ALFA_JOBS
+  tab === 'alfa' ? alfaJobs()
   : tab === 'partners' ? [...PARTNER_JOBS, ...(partnerFeed || [])]
   : allJobs();
 
@@ -199,9 +199,9 @@ ${homeIndicator()}`;
           ? 'Вакансии партнёров загружены из открытого API «Работа России» (opendata.trudvsem.ru).'
           : 'Показан сохранённый срез API «Работа России». Живой запрос недоступен — работаем офлайн.';
         const note = `<div class="src-note">${
-          tab === 'alfa' ? 'Вакансии Альфа-Банка. Демонстрационные данные прототипа.'
+          tab === 'alfa' ? 'Реальные вакансии Альфа-Банка с официального сайта job.alfabank.ru.'
           : tab === 'partners' ? apiNote
-          : `Вакансии Альфа-Банка и партнёров в одной ленте. ${apiNote}`}</div>`;
+          : `Вакансии Альфа-Банка — с job.alfabank.ru. ${apiNote}`}</div>`;
 
         feed.innerHTML = `<div class="result-count">${num(list.length)} ${plural(list.length, 'вакансия', 'вакансии', 'вакансий')}</div>${cards}${note}`;
         bind();
@@ -222,8 +222,9 @@ ${homeIndicator()}`;
           }));
       }
 
-      // Сначала мгновенно показываем снапшот, потом подтягиваем живые данные
+      // Сначала мгновенно показываем снапшоты, потом подтягиваем живые данные
       (async () => {
+        await loadAlfaJobs();
         if (!partnerFeed) {
           feedState = 'loading';
           partnerFeed = await loadSnapshot();
@@ -425,6 +426,9 @@ ${statusBar()}
     </div>` : ''}
 
     ${v.date ? `<p style="color:var(--ink-3);font-size:13.5px;margin-top:18px">Опубликовано ${ruDate(v.date)}</p>` : ''}
+    ${v.url ? `<p style="font-size:13.5px;margin-top:-4px">
+      <a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:var(--red)">Оригинал вакансии
+      на ${v.source === 'job.alfabank.ru' ? 'job.alfabank.ru' : 'trudvsem.ru'}</a></p>` : ''}
   </div>
 
   ${employerBanner()}

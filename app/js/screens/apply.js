@@ -90,9 +90,24 @@ const NUMERIC_TEST = {
   opts: [['120', 0], ['150', 3], ['180', 0], ['200', 0]],
 };
 
+/**
+ * Подбирает профильный вопрос по направлению вакансии. Направления приходят
+ * из API банка и партнёров десятками формулировок, поэтому сопоставляем по
+ * ключевым словам, а не по точному совпадению.
+ */
+function trackTestFor(track = '') {
+  const t = String(track).toLowerCase();
+  if (/поддержк|отделен|клиент|сервис|премиум/.test(t)) return TRACK_TEST['Работа с клиентами'];
+  if (/it|инфраструктур|кибер|разработ|data|безопасност/.test(t)) return TRACK_TEST['Разработка'];
+  if (/продукт|аналитик|риск/.test(t)) return TRACK_TEST['Продукт и аналитика'];
+  if (/продаж|бизнес|доставк|ритейл|логистик/.test(t)) return TRACK_TEST['Продажи'];
+  return null;
+}
+
 function buildTest(job) {
   const t = [];
-  if (TRACK_TEST[job.track]) t.push(TRACK_TEST[job.track]);
+  const byTrack = trackTestFor(job.track);
+  if (byTrack) t.push(byTrack);
   t.push(COMMON_TEST[0], NUMERIC_TEST, COMMON_TEST[1]);
   if (t.length < 4) t.push(COMMON_TEST[2]);
   return t.slice(0, 4);
@@ -113,7 +128,7 @@ function buildVideoQuestions(job) {
       limit: 45,
     },
     {
-      q: TRACK_TEST[job.track]
+      q: trackTestFor(job.track)
         ? 'Опишите ситуацию, когда вам пришлось решать проблему без готовой инструкции'
         : 'Что для вас самое важное в работе и почему?',
       sub: 'Кейс на 45 секунд — без подготовки, как в жизни',
