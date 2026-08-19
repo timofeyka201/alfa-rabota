@@ -7,21 +7,36 @@ import { store } from '../store.js';
 import { nav } from '../router.js';
 import {
   ALFA_JOBS, PARTNER_JOBS, loadSnapshot, loadLive,
-  FILTER_DEFS, emptyFilters, countActive, applyFilters, FORMAT_LABEL,
+  FILTER_DEFS, emptyFilters, countActive, applyFilters, FORMAT_LABEL, companyProfile,
 } from '../data.js';
 
 // Кеш ленты партнёров на время сессии
 let partnerFeed = null;
 let feedState = 'idle'; // idle | loading | snapshot | live
-let uiState = { tab: 'alfa', query: '' };
+let uiState = { tab: 'all', query: '' };
+
+/** Все вакансии сервиса: сначала Альфа-Банк, затем Alfa Group, затем API. */
+export const allJobs = () => [...ALFA_JOBS, ...PARTNER_JOBS, ...(partnerFeed || [])];
+
+/** Лента под выбранную вкладку. */
+const baseFor = (tab) =>
+  tab === 'alfa' ? ALFA_JOBS
+  : tab === 'partners' ? [...PARTNER_JOBS, ...(partnerFeed || [])]
+  : allJobs();
 
 export function getJob(id) {
-  return [...ALFA_JOBS, ...PARTNER_JOBS, ...(partnerFeed || [])].find((j) => j.id === id);
+  return allJobs().find((j) => j.id === id);
 }
 
 /** Псевдо-«совпадение по навыкам» — стабильное для конкретной вакансии. */
 export const matchPct = (id) => 62 + Math.floor(seeded(id, 3) * 36);
 const viewersNow = (id) => 3 + Math.floor(seeded(id, 11) * 48);
+const companyRating = (name) => (4 + seeded(name, 5) * 0.9).toFixed(1).replace('.', ',');
+const reviewCount = (name) => 100 + Math.floor(seeded(name, 9) * 1400);
+const reviewsText = (name) => {
+  const n = reviewCount(name);
+  return `${n} ${plural(n, 'отзыв', 'отзыва', 'отзывов')}`;
+};
 
 // ── Карточка вакансии в ленте ─────────────────────────────────────────────
 export function vacancyCard(v, opts = {}) {
@@ -74,47 +89,63 @@ function rabota(params = {}) {
   const filters = s.filters || emptyFilters();
   const activeCount = countActive(filters);
 
-  const html = `
-${statusBar()}
-<div class="navbar">
-  <button class="navbar__btn" data-go="back">${ico.close}</button>
-  <div class="navbar__title">Вакансии<small>${esc(s.user.city)}</small></div>
-  <button class="icon-btn" data-go="rabotaProfile">${ico.edit}</button>
-</div>
-
-<div class="switch">
-  <button class="switch__btn ${tab === 'alfa' ? 'is-on' : ''}" data-rtab="alfa">В Альфа-Банке</button>
-  <button class="switch__btn ${tab === 'partners' ? 'is-on' : ''}" data-rtab="partners">У партнёров</button>
-</div>
-
-<div class="duo-nav">
-  <button class="duo-nav__card pressable" data-go="responses">
-    <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartRed}</span>
-    ${s.responses.length ? `<span class="duo-nav__count">${s.responses.length}</span>` : ''}
-  </button>
-  <button class="duo-nav__card pressable" data-go="resumes">
-    <span class="duo-nav__label">Резюме</span><span class="duo-nav__emoji">${art.folder}</span>
-    ${s.resumes.length ? `<span class="duo-nav__count">${s.resumes.length}</span>` : ''}
-  </button>
-</div>
-
-<div style="padding:0 var(--pad) 12px">
-  <div class="searchfield">${ico.search}<input id="q" placeholder="Должность или компания" value="${esc(uiState.query)}"></div>
-</div>
-
-<div class="filterrow">
-  <button class="fchip fchip--icon fchip--rel ${activeCount ? 'is-on' : ''}" data-go="filters">
-    ${ico.filter}${activeCount ? `<i class="fchip__dot"></i>` : ''}
-  </button>
-  ${['track', 'exp', 'format', 'schedule'].map((k) => {
+  const filterChips = ['track', 'exp', 'format', 'schedule'].map((k) => {
     const n = (filters[k] || []).length;
     return `<button class="fchip ${n ? 'is-on' : ''}" data-go="filters" data-params='${JSON.stringify({ focus: k })}'>
       ${FILTER_DEFS[k].label}${n ? ` · ${n}` : ''} ${ico.chevD}</button>`;
-  }).join('')}
+  }).join('');
+
+  const html = `
+${statusBar()}
+
+<!-- Компактная шапка: подменяет уехавшую вверх, чтобы «закрыть» и фильтры
+     оставались под рукой на любой глубине ленты -->
+<div class="navbar navbar--compact" id="rabotaCompact" style="display:none">
+  <button class="navbar__btn" data-go="back">${ico.close}</button>
+  <div class="navbar__title" style="font-size:17px">Вакансии</div>
+  <button class="fchip fchip--icon fchip--rel ${activeCount ? 'is-on' : ''}" data-go="filters">
+    ${ico.filter}${activeCount ? '<i class="fchip__dot"></i>' : ''}
+  </button>
 </div>
 
-<div class="scroll" id="feed">
-  <div class="loading"><div class="spinner"></div>Загружаем вакансии…</div>
+<div class="scroll" id="rabotaScroll">
+  <div class="navbar">
+    <button class="navbar__btn" data-go="back">${ico.close}</button>
+    <div class="navbar__title">Вакансии<small>${esc(s.user.city)}</small></div>
+    <button class="icon-btn" data-go="rabotaProfile">${ico.edit}</button>
+  </div>
+
+  <div class="switch switch--three">
+    <button class="switch__btn ${tab === 'all' ? 'is-on' : ''}" data-rtab="all">Все</button>
+    <button class="switch__btn ${tab === 'alfa' ? 'is-on' : ''}" data-rtab="alfa">В Альфа-Банке</button>
+    <button class="switch__btn ${tab === 'partners' ? 'is-on' : ''}" data-rtab="partners">У партнёров</button>
+  </div>
+
+  <div class="duo-nav">
+    <button class="duo-nav__card pressable" data-go="responses">
+      <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartRed}</span>
+      ${s.responses.length ? `<span class="duo-nav__count">${s.responses.length}</span>` : ''}
+    </button>
+    <button class="duo-nav__card pressable" data-go="resumes">
+      <span class="duo-nav__label">Резюме</span><span class="duo-nav__emoji">${art.folder}</span>
+      ${s.resumes.length ? `<span class="duo-nav__count">${s.resumes.length}</span>` : ''}
+    </button>
+  </div>
+
+  <div style="padding:0 var(--pad) 12px">
+    <div class="searchfield">${ico.search}<input id="q" placeholder="Должность или компания" value="${esc(uiState.query)}"></div>
+  </div>
+
+  <div class="filterrow">
+    <button class="fchip fchip--icon fchip--rel ${activeCount ? 'is-on' : ''}" data-go="filters">
+      ${ico.filter}${activeCount ? '<i class="fchip__dot"></i>' : ''}
+    </button>
+    ${filterChips}
+  </div>
+
+  <div id="feed">
+    <div class="loading"><div class="spinner"></div>Загружаем вакансии…</div>
+  </div>
 </div>
 ${homeIndicator()}`;
 
@@ -122,6 +153,13 @@ ${homeIndicator()}`;
     html,
     mount(root) {
       const feed = root.querySelector('#feed');
+      const sc = root.querySelector('#rabotaScroll');
+      const compact = root.querySelector('#rabotaCompact');
+
+      // Шапка уезжает вместе с лентой; компактная появляется ей на замену
+      const onScroll = () => { compact.style.display = sc.scrollTop > 108 ? '' : 'none'; };
+      sc.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
 
       root.querySelectorAll('[data-rtab]').forEach((el) =>
         el.addEventListener('click', () => {
@@ -137,10 +175,7 @@ ${homeIndicator()}`;
       });
 
       function draw() {
-        const base = tab === 'alfa'
-          ? ALFA_JOBS
-          : [...PARTNER_JOBS, ...(partnerFeed || [])];
-        const list = applyFilters(base, filters, uiState.query);
+        const list = applyFilters(baseFor(tab), filters, uiState.query);
 
         if (!list.length) {
           feed.innerHTML = `
@@ -160,11 +195,13 @@ ${homeIndicator()}`;
           return banner + vacancyCard(v);
         }).join('');
 
-        const note = tab === 'partners'
-          ? `<div class="src-note">${feedState === 'live'
-              ? 'Вакансии партнёров загружены из открытого API «Работа России» (opendata.trudvsem.ru).'
-              : 'Показан сохранённый срез API «Работа России». Живой запрос недоступен — работаем офлайн.'}</div>`
-          : '<div class="src-note">Вакансии Альфа-Банка. Демонстрационные данные прототипа.</div>';
+        const apiNote = feedState === 'live'
+          ? 'Вакансии партнёров загружены из открытого API «Работа России» (opendata.trudvsem.ru).'
+          : 'Показан сохранённый срез API «Работа России». Живой запрос недоступен — работаем офлайн.';
+        const note = `<div class="src-note">${
+          tab === 'alfa' ? 'Вакансии Альфа-Банка. Демонстрационные данные прототипа.'
+          : tab === 'partners' ? apiNote
+          : `Вакансии Альфа-Банка и партнёров в одной ленте. ${apiNote}`}</div>`;
 
         feed.innerHTML = `<div class="result-count">${num(list.length)} ${plural(list.length, 'вакансия', 'вакансии', 'вакансий')}</div>${cards}${note}`;
         bind();
@@ -311,7 +348,7 @@ function vacancy(params) {
   const applied = store.hasResponse(v.id);
   const match = matchPct(v.id);
   const viewers = viewersNow(v.id);
-  const similar = [...ALFA_JOBS, ...PARTNER_JOBS, ...(partnerFeed || [])]
+  const similar = allJobs()
     .filter((x) => x.id !== v.id && (x.track === v.track || x.kind === v.kind))
     .slice(0, 6);
 
@@ -358,12 +395,13 @@ ${statusBar()}
     </div>
 
     <h3>Компания</h3>
-    <div class="vd__company">
+    <div class="vd__company pressable" data-go="company" data-params='${JSON.stringify({ name: v.company })}'>
       <div class="vd__logo" style="background:${logoColor(v.company)}">${esc(initials(v.company))}</div>
-      <div>
+      <div style="flex:1 1 auto;min-width:0">
         <div class="vd__cname">${esc(v.company)}${v.kind === 'alfa' || v.partner ? ico.verified : ''}</div>
-        <div class="vd__crate">${starMark} ${(4 + seeded(v.company, 5) * 0.9).toFixed(1).replace('.', ',')} · ${100 + Math.floor(seeded(v.company, 9) * 1400)} отзывов</div>
+        <div class="vd__crate">${starMark} ${companyRating(v.company)} · ${reviewsText(v.company)}</div>
       </div>
+      ${ico.chevR}
     </div>
 
     <h3>Адрес</h3>
@@ -419,6 +457,106 @@ ${statusBar()}
         toast(on ? 'Вакансия сохранена' : 'Убрали из сохранённых');
       });
       root.querySelector('.legal u')?.addEventListener('click', () => toast('Документы сервиса — заглушка'));
+    },
+  };
+}
+
+// ── Карточка работодателя ─────────────────────────────────────────────────
+function company(params) {
+  const name = params.name;
+  const jobs = allJobs().filter((j) => j.company === name);
+  if (!jobs.length) {
+    return { html: `${statusBar()}<div class="empty"><div class="empty__title">Компания не найдена</div></div>` };
+  }
+
+  const c = companyProfile(name, jobs);
+  const openCount = jobs.length;
+  const answerDays = 1 + Math.floor(seeded(name, 21) * 4);
+
+  // Для работодателей из API описания нет — показываем то, что следует из вакансий
+  const about = c.about
+    ? `<p>${esc(c.about)}</p>`
+    : `<p>Работодатель размещает вакансии в «Работе России». Ниже — то, что известно
+        из его объявлений: ${openCount} ${plural(openCount, 'открытая вакансия', 'открытые вакансии', 'открытых вакансий')}
+        ${c.cities.length ? `в ${c.cities.length > 1 ? 'городах' : 'городе'} ${esc(c.cities.join(', '))}` : ''}.</p>
+       <p style="color:var(--ink-2);font-size:14.5px">Описание компании появится, когда работодатель
+        подключится к «Альфа-Работе» и заполнит профиль.</p>`;
+
+  const facts = [
+    c.industry && ['Сфера', c.industry],
+    c.size && ['Размер', c.size],
+    c.founded && ['На рынке', `с ${c.founded} года`],
+    c.cities.length && ['География', c.cities.join(', ')],
+    (c.salaryMin || c.salaryMax) && ['Зарплаты в вакансиях', salaryText(c.salaryMin, c.salaryMax)],
+  ].filter(Boolean);
+
+  const html = `
+${statusBar()}
+<div class="navbar">
+  <button class="navbar__btn" data-go="back">${ico.chevL}</button>
+  <div class="navbar__title" style="font-size:17px">Работодатель</div>
+</div>
+<div class="scroll">
+  <div class="cmp-head">
+    <div class="cmp-logo" style="background:${logoColor(name)}">${esc(initials(name))}</div>
+    <div class="cmp-name">${esc(name)}${c.verified ? ico.verified : ''}</div>
+    <div class="cmp-rate">${starMark} ${companyRating(name)} · ${reviewsText(name)}</div>
+    <div class="cmp-tags">
+      ${c.isAlfa ? '<span class="tag tag--alfa">Работа в Альфа-Банке</span>' : ''}
+      ${c.isPartner ? '<span class="tag tag--partner">Партнёр Alfa Group</span>' : ''}
+      ${c.fromApi ? '<span class="tag">Работа России</span>' : ''}
+      <span class="tag">${esc(c.industry)}</span>
+    </div>
+  </div>
+
+  <div class="vd__stats" style="margin:0 var(--pad)">
+    <div class="vd__stat"><b>${openCount}</b><span>${plural(openCount, 'вакансия', 'вакансии', 'вакансий')}</span></div>
+    <div class="vd__stat"><b>${answerDays} дн.</b><span>средний ответ</span></div>
+    <div class="vd__stat"><b>${companyRating(name)}</b><span>рейтинг</span></div>
+  </div>
+
+  <div class="vd" style="padding-top:0">
+    <h3>О компании</h3>
+    ${about}
+
+    ${facts.length ? `<h3>Коротко</h3>
+      <div class="cmp-facts">
+        ${facts.map(([k, val]) => `<div class="cmp-fact"><span>${esc(k)}</span><b>${esc(val)}</b></div>`).join('')}
+      </div>` : ''}
+
+    ${c.perks ? `<h3>Что предлагает</h3><ul>${c.perks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+
+    ${c.hiring ? `<div class="info-card" style="margin:16px 0 0">
+      <span>${art.clock}</span><span>${esc(c.hiring)}</span>
+    </div>` : ''}
+
+    ${c.isAlfa || c.isPartner ? `<div class="info-card" style="margin-top:10px">
+      <span>${art.card}</span><span>Зарплата приходит на карту Альфа-Банка — видна в приложении в день выплаты</span>
+    </div>` : ''}
+  </div>
+
+  <div class="sec-head"><h2>Вакансии компании</h2></div>
+  ${jobs.map((v) => vacancyCard(v)).join('')}
+
+  <div class="src-note">Рейтинг и отзывы — демонстрационные данные прототипа.</div>
+</div>
+${homeIndicator()}`;
+
+  return {
+    html,
+    mount(root) {
+      root.querySelectorAll('[data-apply]').forEach((btn) =>
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          nav.go('apply', { id: btn.dataset.apply });
+        }));
+      root.querySelectorAll('[data-fav]').forEach((btn) =>
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const on = store.toggleFavorite(btn.dataset.fav);
+          btn.classList.toggle('is-on', on);
+          toast(on ? 'Вакансия сохранена' : 'Убрали из сохранённых');
+        }));
     },
   };
 }
@@ -644,4 +782,4 @@ ${statusBar()}
   };
 }
 
-export const rabotaScreens = { rabota, filters, vacancy, employer, employerDone, rabotaProfile };
+export const rabotaScreens = { rabota, filters, vacancy, company, employer, employerDone, rabotaProfile };

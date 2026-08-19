@@ -52,7 +52,12 @@ function paint(anim) {
   if (typeof screen.mount === 'function') screen.mount(view);
   // Восстанавливаем позицию прокрутки при возврате назад
   const sc = view.querySelector('.scroll');
-  if (sc && entry.scrollTop) sc.scrollTop = entry.scrollTop;
+  if (sc && entry.scrollTop) {
+    sc.scrollTop = entry.scrollTop;
+    // Событие рассылаем сами: экраны, у которых шапка зависит от прокрутки,
+    // иначе останутся в состоянии «лента в самом верху».
+    sc.dispatchEvent(new Event('scroll'));
+  }
   if (sc) sc.addEventListener('scroll', () => { entry.scrollTop = sc.scrollTop; }, { passive: true });
 }
 
