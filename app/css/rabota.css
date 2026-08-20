@@ -11,9 +11,13 @@
   cursor: pointer; color: var(--ink-2); transition: .18s;
 }
 .switch__btn.is-on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-/* Три вкладки в ту же ширину: «Все» уже остальных, названия не переносятся */
-.switch--three .switch__btn { font-size: 14px; padding: 11px 4px; white-space: nowrap; }
-.switch--three .switch__btn:first-child { flex: 0 0 auto; padding: 11px 18px; }
+/* Четыре вкладки: ширина по содержимому, при нехватке места — прокрутка,
+   чтобы длинные названия не сжимались и не переносились */
+.switch--scroll { overflow-x: auto; scrollbar-width: none; }
+.switch--scroll::-webkit-scrollbar { display: none; }
+.switch--scroll .switch__btn {
+  flex: 0 0 auto; font-size: 13.5px; padding: 11px 11px; white-space: nowrap;
+}
 
 /* Компактная шапка поверх уехавшей — тот же приём, что на главной банка */
 .navbar--compact {

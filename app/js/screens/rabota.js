@@ -6,7 +6,7 @@ import { art, starMark } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
 import {
-  alfaJobs, loadAlfaJobs, PARTNER_JOBS, loadSnapshot, loadLive,
+  alfaJobs, loadAlfaJobs, groupJobs, loadGroupJobs, loadSnapshot, loadLive,
   FILTER_DEFS, emptyFilters, countActive, applyFilters, FORMAT_LABEL, companyProfile,
 } from '../data.js';
 
@@ -15,13 +15,14 @@ let partnerFeed = null;
 let feedState = 'idle'; // idle | loading | snapshot | live
 let uiState = { tab: 'all', query: '' };
 
-/** Все вакансии сервиса: сначала Альфа-Банк, затем Alfa Group, затем API. */
-export const allJobs = () => [...alfaJobs(), ...PARTNER_JOBS, ...(partnerFeed || [])];
+/** Все вакансии сервиса: сначала Альфа-Банк, затем Alfa Group, затем партнёры. */
+export const allJobs = () => [...alfaJobs(), ...groupJobs(), ...(partnerFeed || [])];
 
 /** Лента под выбранную вкладку. */
 const baseFor = (tab) =>
   tab === 'alfa' ? alfaJobs()
-  : tab === 'partners' ? [...PARTNER_JOBS, ...(partnerFeed || [])]
+  : tab === 'group' ? groupJobs()
+  : tab === 'partners' ? (partnerFeed || [])
   : allJobs();
 
 export function getJob(id) {
@@ -47,7 +48,7 @@ export function vacancyCard(v, opts = {}) {
 
   const tags = [];
   if (v.kind === 'alfa') tags.push('<span class="tag tag--alfa">Альфа-Банк</span>');
-  else if (v.partner) tags.push('<span class="tag tag--partner">Партнёр Alfa Group</span>');
+  else if (v.kind === 'group') tags.push('<span class="tag tag--partner">Alfa Group</span>');
   tags.push(`<span class="tag">${expText(v.experience)}</span>`);
   if (v.format) tags.push(`<span class="tag">${FORMAT_LABEL[v.format] || ''}</span>`);
   if (match >= 85) tags.push(`<span class="tag tag--match">${art.thumb} Подходит на ${match}%</span>`);
@@ -55,7 +56,7 @@ export function vacancyCard(v, opts = {}) {
   return `<div class="vac pressable" data-go="vacancy" data-params='${JSON.stringify({ id: v.id })}'>
     <div class="vac__tags">${tags.join('')}</div>
     <div class="vac__title">${esc(v.title)}</div>
-    <div class="vac__company">${esc(v.company)}${v.kind === 'alfa' || v.partner ? ico.verified : ''}</div>
+    <div class="vac__company">${esc(v.company)}${v.kind === 'alfa' || v.kind === 'group' ? ico.verified : ''}</div>
     ${v.desc ? `<div class="vac__desc">${esc(v.desc)}</div>` : ''}
     <div class="vac__salary">${salaryText(v.salaryMin, v.salaryMax)}</div>
     <div class="vac__meta">
@@ -115,10 +116,10 @@ ${statusBar()}
     <button class="icon-btn" data-go="rabotaProfile">${ico.edit}</button>
   </div>
 
-  <div class="switch switch--three">
-    <button class="switch__btn ${tab === 'all' ? 'is-on' : ''}" data-rtab="all">Все</button>
-    <button class="switch__btn ${tab === 'alfa' ? 'is-on' : ''}" data-rtab="alfa">В Альфа-Банке</button>
-    <button class="switch__btn ${tab === 'partners' ? 'is-on' : ''}" data-rtab="partners">У партнёров</button>
+  <div class="switch switch--scroll">
+    ${[['all', 'Все'], ['alfa', 'Альфа-Банк'], ['group', 'Alfa Group'], ['partners', 'Партнёры']]
+      .map(([id, label]) => `<button class="switch__btn ${tab === id ? 'is-on' : ''}" data-rtab="${id}">${label}</button>`)
+      .join('')}
   </div>
 
   <div class="duo-nav">
@@ -198,8 +199,10 @@ ${homeIndicator()}`;
         const apiNote = feedState === 'live'
           ? 'Вакансии партнёров загружены из открытого API «Работа России» (opendata.trudvsem.ru).'
           : 'Показан сохранённый срез API «Работа России». Живой запрос недоступен — работаем офлайн.';
+        const groupNote = 'Вакансии Пятёрочки, Перекрёстка и АльфаСтрахования — из «Работы России» по ОГРН компаний.';
         const note = `<div class="src-note">${
           tab === 'alfa' ? 'Реальные вакансии Альфа-Банка с официального сайта job.alfabank.ru.'
+          : tab === 'group' ? groupNote
           : tab === 'partners' ? apiNote
           : `Вакансии Альфа-Банка — с job.alfabank.ru. ${apiNote}`}</div>`;
 
@@ -224,7 +227,7 @@ ${homeIndicator()}`;
 
       // Сначала мгновенно показываем снапшоты, потом подтягиваем живые данные
       (async () => {
-        await loadAlfaJobs();
+        await Promise.all([loadAlfaJobs(), loadGroupJobs()]);
         if (!partnerFeed) {
           feedState = 'loading';
           partnerFeed = await loadSnapshot();
@@ -380,7 +383,7 @@ ${statusBar()}
   <div class="vd">
     <div class="vd__tags" style="margin:0 0 12px">
       ${v.kind === 'alfa' ? '<span class="tag tag--alfa">Работа в Альфа-Банке</span>' : ''}
-      ${v.partner ? '<span class="tag tag--partner">Партнёр Alfa Group</span>' : ''}
+      ${v.kind === 'group' ? `<span class="tag tag--partner">Alfa Group${v.holding && v.holding !== 'Альфа-Групп' ? ' · ' + esc(v.holding) : ''}</span>` : ''}
       ${v.source === 'trudvsem' ? '<span class="tag">Работа России</span>' : ''}
       <span class="tag tag--match">${art.thumb} Подходит на ${match}%</span>
     </div>
@@ -399,7 +402,7 @@ ${statusBar()}
     <div class="vd__company pressable" data-go="company" data-params='${JSON.stringify({ name: v.company })}'>
       <div class="vd__logo" style="background:${logoColor(v.company)}">${esc(initials(v.company))}</div>
       <div style="flex:1 1 auto;min-width:0">
-        <div class="vd__cname">${esc(v.company)}${v.kind === 'alfa' || v.partner ? ico.verified : ''}</div>
+        <div class="vd__cname">${esc(v.company)}${v.kind === 'alfa' || v.kind === 'group' ? ico.verified : ''}</div>
         <div class="vd__crate">${starMark} ${companyRating(v.company)} · ${reviewsText(v.company)}</div>
       </div>
       ${ico.chevR}
@@ -419,7 +422,7 @@ ${statusBar()}
 
     ${v.perks?.length ? `<h3>Мы предлагаем</h3><ul>${v.perks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
 
-    ${v.kind === 'alfa' || v.partner ? `
+    ${v.kind === 'alfa' || v.kind === 'group' ? `
     <div class="info-card" style="margin:20px 0 0">
       <span style="font-size:26px">${art.card}</span>
       <span>Зарплата приходит на карту Альфа-Банка — видна в приложении в день выплаты</span>
@@ -490,7 +493,9 @@ function company(params) {
     c.industry && ['Сфера', c.industry],
     c.size && ['Размер', c.size],
     c.founded && ['На рынке', `с ${c.founded} года`],
-    c.cities.length && ['География', c.cities.join(', ')],
+    c.cities.length && ['География', c.cities.length > 6
+      ? `${c.cities.slice(0, 6).join(', ')} и ещё ${c.cities.length - 6}`
+      : c.cities.join(', ')],
     (c.salaryMin || c.salaryMax) && ['Зарплаты в вакансиях', salaryText(c.salaryMin, c.salaryMax)],
   ].filter(Boolean);
 
@@ -507,7 +512,7 @@ ${statusBar()}
     <div class="cmp-rate">${starMark} ${companyRating(name)} · ${reviewsText(name)}</div>
     <div class="cmp-tags">
       ${c.isAlfa ? '<span class="tag tag--alfa">Работа в Альфа-Банке</span>' : ''}
-      ${c.isPartner ? '<span class="tag tag--partner">Партнёр Alfa Group</span>' : ''}
+      ${c.isGroup ? `<span class="tag tag--partner">Alfa Group${c.holding && c.holding !== 'Альфа-Групп' ? ' · ' + esc(c.holding) : ''}</span>` : ''}
       ${c.fromApi ? '<span class="tag">Работа России</span>' : ''}
       <span class="tag">${esc(c.industry)}</span>
     </div>
@@ -534,7 +539,7 @@ ${statusBar()}
       <span>${art.clock}</span><span>${esc(c.hiring)}</span>
     </div>` : ''}
 
-    ${c.isAlfa || c.isPartner ? `<div class="info-card" style="margin-top:10px">
+    ${c.isAlfa || c.isGroup ? `<div class="info-card" style="margin-top:10px">
       <span>${art.card}</span><span>Зарплата приходит на карту Альфа-Банка — видна в приложении в день выплаты</span>
     </div>` : ''}
   </div>
