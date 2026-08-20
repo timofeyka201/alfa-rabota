@@ -5,6 +5,8 @@ import { ico, statusBar, homeIndicator, esc, toast, salaryText, expText, num, se
 import { art, starMark } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
+import { openDrawer } from './menu.js';
+import { award, levelOf, questState } from '../gamify.js';
 import {
   alfaJobs, loadAlfaJobs, groupJobs, loadGroupJobs, loadSnapshot, loadLive,
   FILTER_DEFS, emptyFilters, countActive, applyFilters, FORMAT_LABEL, companyProfile,
@@ -90,6 +92,12 @@ function rabota(params = {}) {
   const filters = s.filters || emptyFilters();
   const activeCount = countActive(filters);
 
+  const lvl = levelOf(s.game.earned);
+  const quests = questState();
+  const questsLeft = quests.filter((q) => !q.done).length;
+  const questsReady = quests.filter((q) => q.done && !q.claimed).length;
+  const menuDot = questsReady > 0 || store.unreadTotal() > 0;
+
   const filterChips = ['track', 'exp', 'format', 'schedule'].map((k) => {
     const n = (filters[k] || []).length;
     return `<button class="fchip ${n ? 'is-on' : ''}" data-go="filters" data-params='${JSON.stringify({ focus: k })}'>
@@ -102,7 +110,7 @@ ${statusBar()}
 <!-- Компактная шапка: подменяет уехавшую вверх, чтобы «закрыть» и фильтры
      оставались под рукой на любой глубине ленты -->
 <div class="navbar navbar--compact" id="rabotaCompact" style="display:none">
-  <button class="navbar__btn" data-go="back">${ico.close}</button>
+  <button class="navbar__btn" data-burger>${ico.burger}</button>
   <div class="navbar__title" style="font-size:17px">Вакансии</div>
   <button class="fchip fchip--icon fchip--rel ${activeCount ? 'is-on' : ''}" data-go="filters">
     ${ico.filter}${activeCount ? '<i class="fchip__dot"></i>' : ''}
@@ -111,9 +119,9 @@ ${statusBar()}
 
 <div class="scroll" id="rabotaScroll">
   <div class="navbar">
-    <button class="navbar__btn" data-go="back">${ico.close}</button>
+    <button class="navbar__btn" data-burger>${ico.burger}${menuDot ? '<i class="navbar__dot"></i>' : ''}</button>
     <div class="navbar__title">Вакансии<small>${esc(s.user.city)}</small></div>
-    <button class="icon-btn" data-go="rabotaProfile">${ico.edit}</button>
+    <button class="navbar__btn" data-go="back" style="margin:0 -8px 0 0">${ico.close}</button>
   </div>
 
   <div class="switch switch--scroll">
@@ -122,16 +130,25 @@ ${statusBar()}
       .join('')}
   </div>
 
-  <div class="duo-nav">
-    <button class="duo-nav__card pressable" data-go="responses">
-      <span class="duo-nav__label">Отклики</span><span class="duo-nav__emoji">${art.heartRed}</span>
-      ${s.responses.length ? `<span class="duo-nav__count">${s.responses.length}</span>` : ''}
-    </button>
-    <button class="duo-nav__card pressable" data-go="resumes">
-      <span class="duo-nav__label">Резюме</span><span class="duo-nav__emoji">${art.folder}</span>
-      ${s.resumes.length ? `<span class="duo-nav__count">${s.resumes.length}</span>` : ''}
-    </button>
-  </div>
+  <button class="career pressable" data-go="progress">
+    <span class="career__ring" style="--p:${lvl.progress}%"><b>${lvl.n}</b></span>
+    <span class="career__body">
+      <span class="career__name">${esc(lvl.name)} · ${num(s.game.points)} ${plural(s.game.points, 'балл', 'балла', 'баллов')}</span>
+      <span class="career__sub">${questsLeft
+        ? `${questsLeft} ${plural(questsLeft, 'задание', 'задания', 'заданий')} на сегодня`
+        : s.game.streak > 1 ? `${s.game.streak} ${plural(s.game.streak, 'день', 'дня', 'дней')} подряд — так держать` : 'Задания на сегодня выполнены'}</span>
+    </span>
+    ${questsReady ? `<span class="career__flag">${questsReady}</span>` : ico.chevR}
+  </button>
+
+  <button class="shift-promo pressable" data-go="shifts">
+    <span class="shift-promo__art">${art.clock}</span>
+    <span class="shift-promo__body">
+      <span class="shift-promo__title">Альфа-Подработка</span>
+      <span class="shift-promo__sub">Смена на один день — деньги в тот же вечер</span>
+    </span>
+    ${ico.chevR}
+  </button>
 
   <div style="padding:0 var(--pad) 12px">
     <div class="searchfield">${ico.search}<input id="q" placeholder="Должность или компания" value="${esc(uiState.query)}"></div>
@@ -161,6 +178,9 @@ ${homeIndicator()}`;
       const onScroll = () => { compact.style.display = sc.scrollTop > 108 ? '' : 'none'; };
       sc.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      root.querySelectorAll('[data-burger]').forEach((b) =>
+        b.addEventListener('click', openDrawer));
 
       root.querySelectorAll('[data-rtab]').forEach((el) =>
         el.addEventListener('click', () => {
@@ -219,9 +239,12 @@ ${homeIndicator()}`;
         feed.querySelectorAll('[data-fav]').forEach((btn) =>
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const on = store.toggleFavorite(btn.dataset.fav);
+              const on = store.toggleFavorite(btn.dataset.fav);
             btn.classList.toggle('is-on', on);
-            toast(on ? 'Вакансия сохранена' : 'Убрали из сохранённых');
+            if (on) {
+              const r = award('favorite');
+              toast(`Вакансия сохранена · +${r.points}`);
+            } else toast('Убрали из сохранённых');
           }));
       }
 
@@ -457,6 +480,7 @@ ${statusBar()}
   return {
     html,
     mount(root) {
+      award('vacancyView');
       root.querySelector('#applyBtn')?.addEventListener('click', () => nav.go('apply', { id: v.id }));
       root.querySelector('#favBtn')?.addEventListener('click', (e) => {
         const on = store.toggleFavorite(v.id);

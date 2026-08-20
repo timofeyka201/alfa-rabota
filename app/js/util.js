@@ -101,6 +101,7 @@ export const ico = {
   clock: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm1 9.4V7h-2v6.4l4.2 2.5 1-1.7-3.2-1.8Z"/></svg>',
   chat: '<svg viewBox="0 0 24 24"><path d="M3 5h18v11H8l-5 4V5Zm3 3v2h12V8H6Zm0 4v2h8v-2H6Z"/></svg>',
   send: '<svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4l3 8-3 8Z"/></svg>',
+  burger: '<svg viewBox="0 0 24 24" fill="none" stroke="#1B1B1B" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h11"/></svg>',
   filter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="#1B1B1B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4Z"/><path d="m14.5 5.5 4 4"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="#1B1B1B"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm9 3.5-2.1 1.2.4 2.4-2.2 1-1.7-1.7-2.3.8L12 18h-2.4l-1.1-2.3-2.3-.8L4.5 16l-2.2-1 .4-2.4L.6 11.4 2.7 10l-.4-2.4 2.2-1 1.7 1.7 2.3-.8L9.6 5H12l1.1 2.5 2.3.8L17.1 6l2.2 1-.4 2.4L21 12Z"/></svg>',

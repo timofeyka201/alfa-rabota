@@ -11,6 +11,18 @@ const initial = () => ({
   filters: null,
   seenBanner: false,
   employerLead: false,
+  myShifts: [],    // смены Альфа-Подработки, на которые записались
+  game: {
+    points: 0,        // текущий баланс карьерных баллов
+    earned: 0,        // сколько накоплено за всё время — по нему считается уровень
+    money: 0,         // выплачено рублями за достижения
+    streak: 0,        // дней подряд
+    lastVisit: null,  // YYYY-MM-DD последнего захода
+    counters: {},     // действие → сколько раз сделано
+    achievements: [], // выданные достижения
+    rewards: [],      // забранные награды
+    quests: { date: null, progress: {}, claimed: [] },
+  },
 });
 
 let state = load();
@@ -19,7 +31,14 @@ function load() {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return initial();
-    return { ...initial(), ...JSON.parse(raw) };
+    const base = initial();
+    const saved = JSON.parse(raw);
+    // game вложенный, поверхностного слияния мало: у сохранений прошлых
+    // версий внутри него не хватает полей, и обращение к ним падает
+    return {
+      ...base, ...saved,
+      game: { ...base.game, ...(saved.game || {}), quests: { ...base.game.quests, ...(saved.game?.quests || {}) } },
+    };
   } catch {
     return initial();
   }

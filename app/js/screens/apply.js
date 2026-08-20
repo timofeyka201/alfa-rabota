@@ -6,6 +6,7 @@ import { store } from '../store.js';
 import { nav } from '../router.js';
 import { getJob, matchPct } from './rabota.js';
 import { startEmployerReply } from './chat.js';
+import { award } from '../gamify.js';
 
 // ── Банк вопросов ─────────────────────────────────────────────────────────
 const COMMON_TEST = [
@@ -208,6 +209,13 @@ ${statusBar()}
     <span class="pick-row__ico">${art.clip}</span>
     <span><span class="pick-row__title">Файл</span><span class="pick-row__sub">В формате PDF не больше 5 МБ</span></span>
   </button>
+  <button class="pick-row pressable" data-go="resumeBuilder">
+    <span class="pick-row__ico">${art.doc}</span>
+    <span><span class="pick-row__title">Заполнить по шаблону</span><span class="pick-row__sub">Пошагово с подсказками — 5 минут</span></span>
+  </button>
+  <div class="pick-note" data-go="resumeGuide">
+    ${art.search}<span>Не знаете, что писать? <b>Инструкция: как составить резюме</b></span>${ico.chevR}
+  </div>
   <div class="hint" style="padding-top:14px">Данные из резюме используются только для отклика и не передаются третьим лицам.</div>
 </div>`;
   return { html };
@@ -237,7 +245,8 @@ ${statusBar()}
         const name = root.querySelector('#name').value.trim();
         if (!url) { toast('Вставьте ссылку на резюме'); return; }
         store.addResume({ type: 'link', url, name: name || 'Резюме по ссылке' });
-        toast('Резюме добавлено — проверяем');
+        const r = award('resumeAdded');
+        toast(`Резюме добавлено · +${r.points} баллов`);
         // Назад через resumeNew — на тот экран, откуда начали: «Резюме» или «Отклик»
         nav.back(2);
       });
@@ -265,7 +274,8 @@ ${statusBar()}
     mount(root) {
       root.querySelector('#fake').addEventListener('click', () => {
         store.addResume({ type: 'file', name: 'Резюме_Тимофей.pdf' });
-        toast('Файл прикреплён — проверяем');
+        const r = award('resumeAdded');
+        toast(`Файл прикреплён · +${r.points} баллов`);
         nav.back(2);
       });
     },
@@ -727,12 +737,24 @@ function finishResponse(score) {
     text: session.cover || 'Отклик на вакансию',
   });
 
+  const gained = [];
+  const a1 = award('response'); gained.push(a1);
+  if (score) {
+    gained.push(award('vcvDone'));
+    if (score.total >= 75) gained.push(award('vcvHigh'));
+  }
+  const totalPts = gained.reduce((a, b) => a + b.points, 0);
+  const unlocked = gained.flatMap((g) => g.unlocked);
+  const levelUp = gained.map((g) => g.levelUp).filter(Boolean).pop();
+
   session = null;
   startEmployerReply(resp.id);
   nav.tab('home');
   nav.go('rabota');
   nav.go('chat', { id: resp.id });
-  toast('Отклик отправлен');
+  toast(`Отклик отправлен · +${totalPts} баллов`);
+  if (levelUp) setTimeout(() => toast(`Новый уровень: ${levelUp.name}`), 2400);
+  else if (unlocked.length) setTimeout(() => toast(`Достижение: ${unlocked[0].title}`), 2400);
 }
 
 export const applyScreens = {

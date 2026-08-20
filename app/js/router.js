@@ -77,10 +77,16 @@ export const nav = {
     paint('');
   },
 
-  /** Возврат к ближайшему экрану с данным именем (или в начало стека). */
+  /**
+   * Возврат к ближайшему экрану с данным именем.
+   * Если такого в стеке нет — ничего не трогаем и отвечаем false: иначе
+   * цикл снял бы весь стек и выбросил пользователя на первый экран.
+   */
   backTo(name) {
+    if (!stack.some((e) => e.name === name)) return false;
     while (stack.length > 1 && stack[stack.length - 1].name !== name) stack.pop();
     paint('');
+    return true;
   },
 
   tab(name) {

@@ -4,6 +4,7 @@ import { ico, statusBar, homeIndicator, esc, toast, timeHM, ruDate, logoColor, i
 import { art } from '../art.js';
 import { store } from '../store.js';
 import { nav } from '../router.js';
+import { award } from '../gamify.js';
 
 const STATUS = {
   sent: ['Отправлен', 'status--sent'],
@@ -22,7 +23,11 @@ function push(respId, msg, { unread = true, status } = {}) {
   const resp = store.getResponse(respId);
   if (!resp) return;
   store.pushMessage(respId, msg);
-  if (status) resp.status = status;
+  if (status) {
+    // Приглашение — заметная веха, за неё начисляем отдельно и один раз
+    if (status === 'invited' && resp.status !== 'invited') award('invited');
+    resp.status = status;
+  }
   const onScreen = nav.current() === 'chat';
   if (unread && !onScreen) resp.unread = (resp.unread || 0) + 1;
   store.update({});
@@ -189,6 +194,7 @@ ${homeIndicator()}`;
         if (!t) return;
         store.pushMessage(r.id, { from: 'me', text: t });
         input.value = '';
+        award('chatReply');
         nav.refresh();
         replyTo(r.id, t);
       };
